@@ -1,0 +1,19 @@
+killCount + waveCount + (accuracy / 10) - (Squareroot damage / 10) - deaths
+
+Examples
+5 + 2 + 3.5 - 1 - 1 = 8.5 = 9
+9 + 3 + 3.5 - 2 - 2 = 11.5 = 12
+12 + 4 + 3.5 - 3 - 3 = 13.5 = 14
+14 + 5 + 1 - 6 - 13 = 1 == FAIL SAFE = GAME OVER
+
+5 + 2 + 3.5 - 0 - 0 = 10.5 = 11
+11 + 3 + 3.5 - 0 - 0 = 17.5 = 18
+18 + 4 + 3.5 - 0 - 0 = 25.5 = 26
+26 + 5 + 3.5 - 0 - 0 = 34.5 = 35
+26 + 5 + 3.5 - 1 - 1 = 32.5 = 33
+33 + 6 + 3.5 - 6 - 13 = 24
+
+Logic
+///more acc more diff
+more death less diff
+more damage less diff
