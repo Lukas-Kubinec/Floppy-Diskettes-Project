@@ -1,50 +1,84 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 public class NoiseGenerator : MonoBehaviour
 {
-    // Uses Perlin Noise to generate noise maps using selected parametres
+    // Uses Perlin, Cnoise and Snoise(Simplex) noise generators
+    public bool usePerlin;
+    public bool useCNoise;
+    public bool useSNoise;
 
     // Size of the generated map
     [Header("Size of generated texture")]
-    public int xMapSize;
-    public int yMapSize;
+    public int xTexSize = 512;
+    public int yTexSize = 512;
 
     // Origin of the generated world
-    public float xMapOrigin;
-    public float yMapOrigin;
+    public float xTexOffset;
+    public float yTexOffset;
 
     // Map Detail setting
     [Header("Map detail setting")]
     public float mapDetail = 1.0f;
+    public float heightAdjustment = 1.0f;
 
     // Colours 
-    public Color GroundColour;
+    public Color GrassColour;
+    public Color SandColour;
+    public Color WaterColour;
+    public Color MountainColour;
 
+    // Generation of 2D textures
     private Texture2D generatedTexture;
-    private Color[] pix;
+    private Color[] colourOfPosition;
     private Renderer noiseRenderer;
+
+    // Terrain
+    private Terrain mapTerrain;
 
     private void Start()
     {
-        // Assings the Renderer component
-        try
-        {
-            noiseRenderer = GetComponent<Renderer>();
-        } catch
-        {
-            Debug.LogWarning("Missing Renderer component!");
-        }
-        
+        // Assings the required components
+        noiseRenderer = GetComponent<Renderer>();
+        mapTerrain = GetComponent<Terrain>();
+
         PrepareTexture();
-        GenerateMap();
+
+        if (usePerlin)
+        {
+            GeneratePerlinNoiseMap();
+        }
+        else if (useCNoise)
+        {
+            GenerateCNoiseMap();
+        }
+        else if (useSNoise)
+        {
+             GenerateSNoiseMap();
+        } else
+        {
+            Debug.LogWarning("Choose noise");
+        }
+    }
+
+    private void Update()
+    {
+
     }
 
     private void PrepareTexture()
     {
         // Creates new 2D texture that will be used to hold generated noise data
-        generatedTexture = new Texture2D(xMapSize, yMapSize);
-        pix = new Color[generatedTexture.width * generatedTexture.height];
+        generatedTexture = new Texture2D(xTexSize, yTexSize);
+
+        // Holds all possible positions of texture inside a field
+        colourOfPosition = new Color[generatedTexture.width * generatedTexture.height];
         noiseRenderer.material.mainTexture = generatedTexture;
+    }
+
+    private void SetTerrainHeight(float[,] generatedHeights)
+    {
+        mapTerrain.terrainData.SetHeights(0, 0, generatedHeights);
     }
 
     private Color SelectColour(float sampleValue)
@@ -53,38 +87,103 @@ public class NoiseGenerator : MonoBehaviour
         if (sampleValue < 0.2f)
         {
             // Water
-            color = new (0.071f, 0.42f, 0.718f);
-        } else if (sampleValue < 0.7f)
+            color = WaterColour;
+        } 
+        else if (sampleValue < 0.4f)
+        {
+            // Sand
+            color = SandColour;
+        }
+        else if (sampleValue < 0.8f)
         {
             // Ground
-            color = GroundColour;
-        } else
+            color = GrassColour;
+        } 
+        else
         {
             // Mountain
-            color = new(0.341f, 0.31f, 0.235f);
+            color = MountainColour;
         }
 
         return color;
     }
 
-    private void GenerateMap()
+    private void GenerateCNoiseMap()
     {
+        // Creates 
+        float[,] generatedHeights = new float[xTexSize, yTexSize];
+
         for (float y = 0.0f; y < generatedTexture.height; y++)
         {
             for (float x = 0.0f; x < generatedTexture.width; x++)
             {
-                float xCoord = xMapOrigin + x / generatedTexture.width * mapDetail;
-                float yCoord = yMapOrigin + y / generatedTexture.height * mapDetail;
+                float xCoord = xTexOffset + x / generatedTexture.width * mapDetail;
+                float yCoord = yTexOffset + y / generatedTexture.height * mapDetail;
 
-                float sample = Mathf.PerlinNoise(xCoord, yCoord);
-                Mathf.Clamp(sample, 0.0f, 1.0f);
-                Color selectedColor = SelectColour(sample);
-                pix[(int)y * generatedTexture.width + (int)x] = selectedColor;
+                float perlinNoiseValue = noise.cnoise(new float2(xCoord, yCoord));
+                math.unlerp(-1,1, perlinNoiseValue);
+                generatedHeights[(int)x, (int)y] = perlinNoiseValue * heightAdjustment;
+
+                // Generates colour map
+                Color selectedColor = SelectColour(perlinNoiseValue);
+                colourOfPosition[(int)y * generatedTexture.width + (int)x] = selectedColor;
             }
         }
 
-        generatedTexture.SetPixels(pix);
-        generatedTexture.Apply();
+        SetTerrainHeight(generatedHeights);
+    }
+
+    private void GeneratePerlinNoiseMap()
+    {
+        // Creates 
+        float[,] generatedHeights = new float[xTexSize, yTexSize];
+
+        for (float y = 0.0f; y < generatedTexture.height; y++)
+        {
+            for (float x = 0.0f; x < generatedTexture.width; x++)
+            {
+                float xCoord = xTexOffset + x / generatedTexture.width * mapDetail;
+                float yCoord = yTexOffset + y / generatedTexture.height * mapDetail;
+
+                float perlinNoiseValue = Mathf.PerlinNoise(xCoord, yCoord);
+                math.unlerp(-1, 1, perlinNoiseValue);
+                Mathf.Clamp(perlinNoiseValue, 0.0f, 1.0f);
+                generatedHeights[(int)x, (int)y] = perlinNoiseValue * heightAdjustment;
+
+                // Generates colour map
+                Color selectedColor = SelectColour(perlinNoiseValue);
+                colourOfPosition[(int)y * generatedTexture.width + (int)x] = selectedColor;
+            }
+        }
+
+        SetTerrainHeight(generatedHeights);
+    }
+
+    private void GenerateSNoiseMap()
+    {
+        // Creates 
+        float[,] generatedHeights = new float[xTexSize, yTexSize];
+
+        for (float y = 0.0f; y < generatedTexture.height; y++)
+        {
+            for (float x = 0.0f; x < generatedTexture.width; x++)
+            {
+                float xCoord = xTexOffset + x / generatedTexture.width * mapDetail;
+                float yCoord = yTexOffset + y / generatedTexture.height * mapDetail;
+
+                //float perlinNoiseValue = Mathf.PerlinNoise(xCoord, yCoord);
+                float perlinNoiseValue = noise.snoise(new float2(xCoord, yCoord));
+                math.unlerp(-1, 1, perlinNoiseValue);
+                Mathf.Clamp(perlinNoiseValue, 0.0f, 1.0f);
+                generatedHeights[(int)x, (int)y] = perlinNoiseValue * heightAdjustment;
+
+                // Generates colour map
+                Color selectedColor = SelectColour(perlinNoiseValue);
+                colourOfPosition[(int)y * generatedTexture.width + (int)x] = selectedColor;
+            }
+        }
+
+        SetTerrainHeight(generatedHeights);
     }
 
 }
