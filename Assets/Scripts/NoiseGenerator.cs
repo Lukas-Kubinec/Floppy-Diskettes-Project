@@ -1,8 +1,11 @@
+using Unity.AI.Navigation;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class NoiseGenerator : MonoBehaviour
 {
+    public GameManager gameManager;
 
     // Uses Perlin, Cnoise and Snoise(Simplex) noise generators
     [Header("Noise Generator")]
@@ -46,11 +49,12 @@ public class NoiseGenerator : MonoBehaviour
 
     // Terrain 
     private Terrain WorldTerrain;
-    public GameManager gameManager;
+    private NavMeshSurface navMesh;
 
     private void Start()
     {
         gameManager = GameManager.instance;
+        navMesh = GetComponent<NavMeshSurface>();
 
         WorldTerrain = GetComponent<Terrain>(); // Assings the required components
         BeginGenerateTerrain(); // Generates height and colour map for terrain
@@ -64,6 +68,8 @@ public class NoiseGenerator : MonoBehaviour
         var generatedSpawnHeightsValues = GenerateNoiseMap();
         GenerateTerrain(generatedTerrainHeightsValues);
         BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedSpawnHeightsValues); // Generates random spawn points
+
+        navMesh.BuildNavMesh();
     }
 
     private void BeginGenerateSpawnPoints(float[,] TerrainHeights, float[,] SpawnHeights)
@@ -83,7 +89,7 @@ public class NoiseGenerator : MonoBehaviour
                     if (spawnRandomValue < spawnChance)
                     {
                         var currentHeight = TerrainHeights[y, x];
-                        spawnLocations[x, y] = spawnRandomValue;
+                        spawnLocations[x, y] = currentHeight;
                     }
                 }
             }

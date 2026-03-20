@@ -35,6 +35,11 @@ public class ZombieSpawnManager : MonoBehaviour
         gameManager = GameManager.instance;
     }
 
+    private void CreateZombieSpawner()
+    {
+
+    }
+
     private void Update()
     {
         currentSpawnTimer += Time.deltaTime;
