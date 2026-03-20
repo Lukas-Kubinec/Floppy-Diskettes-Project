@@ -36,7 +36,10 @@ public class ZombieSpawnManager : MonoBehaviour
 
     private void CreateZombieSpawner()
     {
+        var spawnLocations = gameManager.noiseGenerator.spawnLocations;
+        int spawnLocationsLenght = UnityEngine.Random.Range(0, spawnLocations.Count);
 
+        SpawnZombie(spawnLocations[spawnLocationsLenght]);
     }
 
     private void Update()
@@ -49,7 +52,7 @@ public class ZombieSpawnManager : MonoBehaviour
             {
                 if (currentNumberOfZombiesSpawned < gameManager.skillManager.numberOfZombiesToSpawn)
                 {
-                    SpawnZombie(spawnPrefab.transform.position);
+                    CreateZombieSpawner();
                 } 
                 else
                 {

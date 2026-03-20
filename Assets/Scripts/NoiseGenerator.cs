@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using Unity.AI.Navigation;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class NoiseGenerator : MonoBehaviour
 {
@@ -50,6 +50,7 @@ public class NoiseGenerator : MonoBehaviour
     // Terrain 
     private Terrain WorldTerrain;
     private NavMeshSurface navMesh;
+    public List<Vector3> spawnLocations = new List<Vector3>();
 
     private void Start()
     {
@@ -74,7 +75,7 @@ public class NoiseGenerator : MonoBehaviour
 
     private void BeginGenerateSpawnPoints(float[,] TerrainHeights, float[,] SpawnHeights)
     {
-        float[,] spawnLocations = new float[xTexSize, yTexSize];
+        //spawnLocations = new float[xTexSize, yTexSize];
         float spawnAfterThreshold = 0.7f;
         int spawnChance = 30; // % chance of spawning
 
@@ -88,8 +89,10 @@ public class NoiseGenerator : MonoBehaviour
 
                     if (spawnRandomValue < spawnChance)
                     {
-                        var currentHeight = TerrainHeights[y, x];
-                        spawnLocations[x, y] = currentHeight;
+                        //var currentHeight = TerrainHeights[y, x];
+                        //spawnLocations[x, y] = currentHeight;
+                        var currentHeight = WorldTerrain.SampleHeight(new Vector3(x, 0, y));
+                        spawnLocations.Add(new Vector3(x, currentHeight, y));
                     }
                 }
             }
