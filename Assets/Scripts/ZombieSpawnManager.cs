@@ -1,17 +1,34 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+
+public class ZombieData
+{
+    public NavMeshAgent nav;
+    public float speed;
+}
 
 public class ZombieSpawnManager : MonoBehaviour
 {
     public GameManager gameManager;
+    public static ZombieSpawnManager instance;
 
-    [Header("ZombiePrefab")]
+    [Header("GameObjects")]
+    public GameObject player;
     public GameObject zombiePrefab;
+    public GameObject spawnPrefab;
 
     public float currentNumberOfZombiesSpawned;
     public float currentSpawnTimer;
     public float maxSpawnTimer = 3;
     public bool waveOver;
 
+    public List<ZombieData> zombies = new List<ZombieData>();
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Start()
     {
@@ -28,7 +45,7 @@ public class ZombieSpawnManager : MonoBehaviour
             {
                 if (currentNumberOfZombiesSpawned < gameManager.skillManager.numberOfZombiesToSpawn)
                 {
-                    SpawnZombie(Vector3.zero);
+                    SpawnZombie(spawnPrefab.transform.position);
                 } 
                 else
                 {
@@ -43,11 +60,21 @@ public class ZombieSpawnManager : MonoBehaviour
                 waveOver = true;
             }
         }
+
+        for (int i = 0; i < zombies.Count; i++)
+        {
+            ZombieData data = zombies[i];
+            data.nav.SetDestination(player.transform.position); 
+        }
     }
 
     public void SpawnZombie(Vector3 spawnlocation)
     {
-        Instantiate(zombiePrefab, spawnlocation, Quaternion.identity);
+        var currentZombie = Instantiate(zombiePrefab, spawnlocation, Quaternion.identity);
+        var zombieScript = currentZombie.GetComponent<ZombieScript>();
+        ZombieData data = new ZombieData { nav = zombieScript.agent, speed = 10f };
+        zombieScript.thisZombieData = data;
+        zombies.Add(data);
         currentNumberOfZombiesSpawned++;
     }
 

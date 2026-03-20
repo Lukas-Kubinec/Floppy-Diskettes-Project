@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class NoiseGenerator : MonoBehaviour
 {
+
     // Uses Perlin, Cnoise and Snoise(Simplex) noise generators
     [Header("Noise Generator")]
     public bool usePerlinNoise = true; // Default method
@@ -28,10 +29,16 @@ public class NoiseGenerator : MonoBehaviour
 
     // Colours
     [Header("Colour setings")]
-    public Color GrassColour;
-    public Color SandColour;
     public Color WaterColour;
+    public Color SandColour;
+    public Color GrassColour;
     public Color MountainColour;
+
+    // Terrain height levels
+    public float waterHeightLevel = 0.25f; // deepest
+    public float sandHeightLevel = 0.5f;
+    public float grassHeightLevel = 0.75f;
+    public float mountainHeightLevel = 1.0f; // tallest
 
     // Generation of 2D textures
     private Texture2D GeneratedColourTexture;
@@ -39,18 +46,48 @@ public class NoiseGenerator : MonoBehaviour
 
     // Terrain 
     private Terrain WorldTerrain;
+    public GameManager gameManager;
 
     private void Start()
     {
-        WorldTerrain = GetComponent<Terrain>();// Assings the required components
-        BeginGenerateTerrain();// Generates height and colour map for terrain
+        gameManager = GameManager.instance;
+
+        WorldTerrain = GetComponent<Terrain>(); // Assings the required components
+        BeginGenerateTerrain(); // Generates height and colour map for terrain
     }
 
     private void BeginGenerateTerrain()
     {
         CheckRandomSeed();
         PrepareTexture();
-        GenerateNoiseMap();
+        var generatedTerrainHeightsValues = GenerateNoiseMap();
+        var generatedSpawnHeightsValues = GenerateNoiseMap();
+        GenerateTerrain(generatedTerrainHeightsValues);
+        BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedSpawnHeightsValues); // Generates random spawn points
+    }
+
+    private void BeginGenerateSpawnPoints(float[,] TerrainHeights, float[,] SpawnHeights)
+    {
+        float[,] spawnLocations = new float[xTexSize, yTexSize];
+        float spawnAfterThreshold = 0.7f;
+        int spawnChance = 30; // % chance of spawning
+
+        for (int y = 0; y < yTexSize; y++)
+        {
+            for (int x = 0; x < xTexSize; x++)
+            {
+                if (spawnAfterThreshold >= SpawnHeights[y,x])
+                {
+                    var spawnRandomValue = UnityEngine.Random.Range(0, 100);
+
+                    if (spawnRandomValue < spawnChance)
+                    {
+                        var currentHeight = TerrainHeights[y, x];
+                        spawnLocations[x, y] = spawnRandomValue;
+                    }
+                }
+            }
+        }
     }
 
     private void CheckRandomSeed()
@@ -108,22 +145,22 @@ public class NoiseGenerator : MonoBehaviour
     private Color SelectColour(float sampleValue)
     {
         Color color = new Color();
-        if (sampleValue < 0.2f * heightAdjustment)
+        if (sampleValue < waterHeightLevel * heightAdjustment)
         {
             // Water
             color = WaterColour;
         } 
-        else if (sampleValue < 0.4f * heightAdjustment)
+        else if (sampleValue < sandHeightLevel * heightAdjustment)
         {
             // Sand
             color = SandColour;
         }
-        else if (sampleValue < 0.8f * heightAdjustment)
+        else if (sampleValue < grassHeightLevel * heightAdjustment)
         {
-            // Ground
+            // Grass
             color = GrassColour;
         } 
-        else
+        else if (sampleValue < mountainHeightLevel * heightAdjustment)
         {
             // Mountain
             color = MountainColour;
@@ -132,7 +169,7 @@ public class NoiseGenerator : MonoBehaviour
         return color;
     }
 
-    private void GenerateNoiseMap()
+    private float[,] GenerateNoiseMap()
     {
         // Creates 
         float[,] generatedHeights = new float[xTexSize, yTexSize];
@@ -166,6 +203,6 @@ public class NoiseGenerator : MonoBehaviour
             }
         }
         // Sets terrain height and applies texture 
-        GenerateTerrain(generatedHeights);
+        return generatedHeights;
     }
 }

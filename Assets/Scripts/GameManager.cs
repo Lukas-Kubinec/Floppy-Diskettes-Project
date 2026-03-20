@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public HealthManager healthManager;
     public ZombieSpawnManager zombieSpawnManager;
     public InputManager inputManager;
+    public NoiseGenerator noiseGenerator;
 
 
     private void Awake()

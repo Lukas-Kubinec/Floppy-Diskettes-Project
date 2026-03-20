@@ -467,9 +467,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieSpawnManager
   gameManager: {fileID: 961797231}
-  player: {fileID: 0}
   zombiePrefab: {fileID: 1220572554200610400, guid: 24b7e09331cabc7459fd54150f5aded1, type: 3}
-  spawnPrefab: {fileID: 0}
   currentNumberOfZombiesSpawned: 0
   currentSpawnTimer: 0
   maxSpawnTimer: 3
@@ -542,7 +540,6 @@ MonoBehaviour:
   healthManager: {fileID: 961797230}
   zombieSpawnManager: {fileID: 961797227}
   inputManager: {fileID: 961797233}
-  noiseGenerator: {fileID: 2021738701}
 --- !u!4 &961797232
 Transform:
   m_ObjectHideFlags: 0
@@ -622,7 +619,6 @@ MonoBehaviour:
   sandHeightLevel: 0.25
   grassHeightLevel: 0.8
   mountainHeightLevel: 1
-  gameManager: {fileID: 0}
 --- !u!154 &2021738702
 TerrainCollider:
   m_ObjectHideFlags: 0
