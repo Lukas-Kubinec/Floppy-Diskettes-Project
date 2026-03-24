@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class NoiseGenerator : MonoBehaviour
+public class WorldGenerator : MonoBehaviour
 {
     public GameManager gameManager;
 
@@ -50,7 +51,10 @@ public class NoiseGenerator : MonoBehaviour
     // Terrain 
     private Terrain WorldTerrain;
     private NavMeshSurface navMesh;
-    public List<Vector3> spawnLocations = new List<Vector3>();
+    public List<Vector3> spawnLocations = new();
+    public float[,] generatedTerrainHeightsValues;
+    public float[,] generatedZombieSpawnHeightsValues;
+
 
     private void Start()
     {
@@ -58,23 +62,40 @@ public class NoiseGenerator : MonoBehaviour
         navMesh = GetComponent<NavMeshSurface>();
 
         WorldTerrain = GetComponent<Terrain>(); // Assings the required components
-        BeginGenerateTerrain(); // Generates height and colour map for terrain
     }
 
-    private void BeginGenerateTerrain()
+    public Terrain GetTerrainObject()
+    {
+        return WorldTerrain;
+    }
+
+    public void BakeNavigation()
+    {
+        navMesh.BuildNavMesh();
+    }
+
+    public void BeginGenerateTerrainAndSpawns()
     {
         CheckRandomSeed();
         PrepareTexture();
-        var generatedTerrainHeightsValues = GenerateNoiseMap();
-        var generatedSpawnHeightsValues = GenerateNoiseMap();
+        generatedTerrainHeightsValues = GenerateNoiseMap();
+        generatedZombieSpawnHeightsValues = GenerateNoiseMap();
         GenerateTerrain(generatedTerrainHeightsValues);
-        BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedSpawnHeightsValues); // Generates random spawn points
-
-        navMesh.BuildNavMesh();
+        BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedZombieSpawnHeightsValues); // Generates random spawn points
     }
 
     private void BeginGenerateSpawnPoints(float[,] TerrainHeights, float[,] SpawnHeights)
     {
+        if (TerrainHeights is null)
+        {
+            throw new ArgumentNullException(nameof(TerrainHeights));
+        }
+
+        if (SpawnHeights is null)
+        {
+            throw new ArgumentNullException(nameof(SpawnHeights));
+        }
+
         //spawnLocations = new float[xTexSize, yTexSize];
         float spawnAfterThreshold = 0.7f;
         int spawnChance = 30; // % chance of spawning
@@ -89,8 +110,6 @@ public class NoiseGenerator : MonoBehaviour
 
                     if (spawnRandomValue < spawnChance)
                     {
-                        //var currentHeight = TerrainHeights[y, x];
-                        //spawnLocations[x, y] = currentHeight;
                         var currentHeight = WorldTerrain.SampleHeight(new Vector3(x, 0, y));
                         spawnLocations.Add(new Vector3(x, currentHeight, y));
                     }
@@ -125,6 +144,11 @@ public class NoiseGenerator : MonoBehaviour
 
     private void GenerateTerrain(float[,] generatedHeights)
     {
+        if (generatedHeights is null)
+        {
+            throw new ArgumentNullException(nameof(generatedHeights));
+        }
+
         WorldTerrain.terrainData.SetHeights(0, 0, generatedHeights);
 
         // Texturing
@@ -138,22 +162,26 @@ public class NoiseGenerator : MonoBehaviour
         }
         // Colour texture
         GeneratedColourTexture.Apply();
-        TerrainLayer terrainColourLayer = new TerrainLayer();
-        terrainColourLayer.diffuseTexture = GeneratedColourTexture;
-        terrainColourLayer.tileSize = new Vector2(yTexSize, yTexSize);
+        TerrainLayer terrainColourLayer = new()
+        {
+            diffuseTexture = GeneratedColourTexture,
+            tileSize = new Vector2(yTexSize, yTexSize)
+        };
 
         // Grayscale texture - TESTING 
         GeneratedGrayscaleTexture.Apply();
-        TerrainLayer terrainGrayscaleLayer = new TerrainLayer();
-        terrainGrayscaleLayer.diffuseTexture = GeneratedGrayscaleTexture;
-        terrainGrayscaleLayer.tileSize = new Vector2(yTexSize, yTexSize);
+        TerrainLayer terrainGrayscaleLayer = new()
+        {
+            diffuseTexture = GeneratedGrayscaleTexture,
+            tileSize = new Vector2(yTexSize, yTexSize)
+        };
 
         WorldTerrain.terrainData.terrainLayers = new TerrainLayer[] { terrainColourLayer, terrainGrayscaleLayer  };
     }
 
     private Color SelectColour(float sampleValue)
     {
-        Color color = new Color();
+        Color color = new();
         if (sampleValue < waterHeightLevel * heightAdjustment)
         {
             // Water

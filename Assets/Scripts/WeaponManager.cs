@@ -18,7 +18,7 @@ public class WeaponManager : MonoBehaviour
 
         if (gameManager.skillManager.kills == gameManager.skillManager.numberOfZombiesToSpawn)
         {
-            gameManager.skillManager.calcnextwave();
+            gameManager.skillManager.CalcNextWave();
         }
     }
 }
