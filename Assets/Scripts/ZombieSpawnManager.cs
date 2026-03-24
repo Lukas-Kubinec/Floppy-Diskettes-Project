@@ -5,7 +5,6 @@ using UnityEngine.AI;
 public class ZombieData
 {
     public NavMeshAgent nav;
-    public float speed;
 }
 
 public class ZombieSpawnManager : MonoBehaviour
@@ -95,9 +94,9 @@ public class ZombieSpawnManager : MonoBehaviour
         var currentZombie = Instantiate(zombiePrefab, spawnLocation, Quaternion.identity);
         var zombieScript = currentZombie.GetComponent<ZombieScript>();
         ZombieData data = new() { nav = zombieScript.agent, speed = 10f };
+        ZombieData data = new ZombieData { nav = zombieScript.agent};
         zombieScript.thisZombieData = data;
         zombies.Add(data);
         currentNumberOfZombiesSpawned++;
     }
-
 }
