@@ -14,16 +14,16 @@ public class ZombieSpawnManager : MonoBehaviour
     public static ZombieSpawnManager instance;
 
     [Header("GameObjects")]
-    public GameObject player;
+    private GameObject player;
     public GameObject zombiePrefab;
-    public GameObject spawnPrefab;
 
     public float currentNumberOfZombiesSpawned;
     public float currentSpawnTimer;
     public float maxSpawnTimer = 3;
-    public bool waveOver;
+    public bool waveOver = false;
+    private bool zombieSpawnEnabled = false;
 
-    public List<ZombieData> zombies = new List<ZombieData>();
+    public List<ZombieData> zombies = new();
 
     private void Awake()
     {
@@ -33,17 +33,23 @@ public class ZombieSpawnManager : MonoBehaviour
     private void Start()
     {
         gameManager = GameManager.instance;
+        player = gameManager.skillManager.playerObject;
     }
 
-    private void CreateZombieSpawner()
+    public void SetZombieSpawn(bool state)
     {
-        var spawnLocations = gameManager.noiseGenerator.spawnLocations;
-        int spawnLocationsLenght = UnityEngine.Random.Range(0, spawnLocations.Count);
-
-        SpawnZombie(spawnLocations[spawnLocationsLenght]);
+        zombieSpawnEnabled = state;
     }
 
     private void Update()
+    {
+        if (zombieSpawnEnabled)
+        {
+            StartSpawningZombies();
+        }
+    }
+
+    private void StartSpawningZombies()
     {
         currentSpawnTimer += Time.deltaTime;
 
@@ -54,12 +60,12 @@ public class ZombieSpawnManager : MonoBehaviour
                 if (currentNumberOfZombiesSpawned < gameManager.skillManager.numberOfZombiesToSpawn)
                 {
                     CreateZombieSpawner();
-                } 
+                }
                 else
                 {
                     break;
                 }
-              
+
             }
             currentSpawnTimer = 0;
 
@@ -72,15 +78,23 @@ public class ZombieSpawnManager : MonoBehaviour
         for (int i = 0; i < zombies.Count; i++)
         {
             ZombieData data = zombies[i];
-            data.nav.SetDestination(player.transform.position); 
+            data.nav.SetDestination(player.transform.position);
         }
     }
 
-    public void SpawnZombie(Vector3 spawnlocation)
+    private void CreateZombieSpawner()
     {
-        var currentZombie = Instantiate(zombiePrefab, spawnlocation, Quaternion.identity);
+        var spawnLocations = gameManager.worldGenerator.spawnLocations;
+        int spawnLocationsLenght = UnityEngine.Random.Range(0, spawnLocations.Count);
+
+        SpawnZombie(spawnLocations[spawnLocationsLenght]);
+    }
+
+    public void SpawnZombie(Vector3 spawnLocation)
+    {
+        var currentZombie = Instantiate(zombiePrefab, spawnLocation, Quaternion.identity);
         var zombieScript = currentZombie.GetComponent<ZombieScript>();
-        ZombieData data = new ZombieData { nav = zombieScript.agent, speed = 10f };
+        ZombieData data = new() { nav = zombieScript.agent, speed = 10f };
         zombieScript.thisZombieData = data;
         zombies.Add(data);
         currentNumberOfZombiesSpawned++;

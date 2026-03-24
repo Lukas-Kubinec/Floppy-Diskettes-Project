@@ -23,13 +23,24 @@ public class SkillManager : MonoBehaviour
     [Header("Otherstuff")]
     public float numberofZombiesprevwave;
     public GameManager gameManager;
+    public GameObject playerObject;
 
     public void Start()
     {
         gameManager = GameManager.instance;
     }
 
-    public void calcnextwave()
+    public void RespawnPlayerCentred()
+    {
+        var xTerrainCentre = gameManager.worldGenerator.xTexSize / 2;
+        var yTerrainCentre = gameManager.worldGenerator.yTexSize / 2;
+        var worldTerrain = gameManager.worldGenerator.GetTerrainObject();
+        var heightTerrainCentre = worldTerrain.SampleHeight(new Vector3(xTerrainCentre, yTerrainCentre)) ;
+
+        playerObject.transform.position = new Vector3(xTerrainCentre,heightTerrainCentre + 1.0f , yTerrainCentre);
+    }
+
+    public void CalcNextWave()
     {
         waveCount++;
 
@@ -50,17 +61,17 @@ public class SkillManager : MonoBehaviour
         healthPackDropRate = gameManager.healthManager.maxHealth - gameManager.healthManager.currentPlayerHealth;
     }
 
-    public void calcZombieHealth()
+    public void CalcZombieHealth()
     {
         zombieHealth = 100 + ((numberOfZombiesToSpawn * 10 + accuracy)/2);
     }
 
-    public void calcZombieSpeed() 
+    public void CalcZombieSpeed() 
     {
         zombieSpeed = 5 + waveCount - (Mathf.Sqrt(damageTaken) / 10 ) - deaths;
     }
 
-    public void calcZombieDamage()
+    public void CalcZombieDamage()
     {
         zombieDamage = 100 / zombieSpeed;
     }
