@@ -14,9 +14,7 @@ public class ObstacleGenerator : MonoBehaviour
         { 1, new[] { 0, 1 } }  // Path can be next to Path or Empty (simple rules)
     };
 
-    public GameObject meshPart1;
-    public GameObject meshPart2;
-    public GameObject meshPart3;
+    public GameObject[] meshParts;
 
     private static readonly int size = 3;
     private static readonly List<int>[,,] grid = new List<int>[size, size, size];
@@ -46,7 +44,7 @@ public class ObstacleGenerator : MonoBehaviour
                 {
                     if (grid[z,y,x][0] != 0)
                     {
-                        var newObs = Instantiate(meshPart1, pos, Quaternion.identity);
+                        var newObs = Instantiate(meshParts[y], pos, Quaternion.identity);
                         newObs.transform.SetParent(this.transform);
                         var goPos = new Vector3(x, y, z);
                         newObs.transform.localPosition = goPos;
@@ -96,7 +94,6 @@ public class ObstacleGenerator : MonoBehaviour
         // 2. Collapse Cell
         int chosenTile = grid[targetZ, targetY, targetX][rand.Next(grid[targetZ, targetY, targetX].Count)];
         grid[targetZ, targetY, targetX] = new List<int> { chosenTile };
-        Debug.Log(chosenTile.ToString());
 
         // 3. Propagate (Simple adjacency)
         Propagate(targetX, targetY, targetZ);

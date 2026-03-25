@@ -5,7 +5,10 @@ using UnityEngine.Rendering;
 
 public class ZombieScript : MonoBehaviour
 {
+    [Header("Zombie stats")]
     public float zombieHealth;
+    public float zombieSpeed;
+
     public ZombieData thisZombieData;
     public NavMeshAgent agent;
 

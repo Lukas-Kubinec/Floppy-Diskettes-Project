@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74b52df10131c8d45964ef665f79c91e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleGenerator
-  meshPart1: {fileID: 919132149155446097, guid: 55d427655f42b7e409da32fdd40c9afb, type: 3}
-  material: {fileID: 2100000, guid: ecd0eb03dc8ddc74e86716a6c7093413, type: 2}
+  meshParts:
+  - {fileID: 1145285399675760984, guid: 4b8ecb0b3d4826341b2897f5ee4e2057, type: 3}
+  - {fileID: 9222330663244621475, guid: c9c872d7d63f9c2408458360db1d6c75, type: 3}
+  - {fileID: 5673094388953224318, guid: 7c57c1d6ac9b36948a4d54792cf184b6, type: 3}
 --- !u!65 &-4567593055677872362
 BoxCollider:
   m_ObjectHideFlags: 0
