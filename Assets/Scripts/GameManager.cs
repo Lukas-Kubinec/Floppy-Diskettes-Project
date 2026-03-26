@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     bool worldGenerated = false;
     bool NavigationBaked = false;
     bool PlayerIsSpawned = false;
+    bool gameIsReady = false;
 
     private void Awake()
     {
@@ -24,7 +25,10 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        GameStartInOrder();
+        if (!gameIsReady)
+        {
+            GameStartInOrder();
+        }
     }
 
     private void GameStartInOrder()
@@ -37,22 +41,41 @@ public class GameManager : MonoBehaviour
         } else if (worldGenerated && !obstacleSpawnManager.AllObstaclesSpawned())
         {
             obstacleSpawnManager.SetObstacleSpawn(true);
-        } else if (obstacleSpawnManager.AllObstaclesSpawned() && !NavigationBaked)
+        }
+        else if (obstacleSpawnManager.AllObstaclesSpawned() && !NavigationBaked)
         {
             worldGenerator.BakeNavigation();
             NavigationBaked = true;
-        } else if (NavigationBaked && !PlayerIsSpawned)
+        }
+        else if (NavigationBaked && !PlayerIsSpawned)
         {
             skillManager.RespawnPlayerCentred();
             PlayerIsSpawned = true;
         } else if (PlayerIsSpawned)
         {
             zombieSpawnManager.SetZombieSpawn(true);
-        }
+            gameIsReady = true; // World initiation is complete
+        } 
     }
 
     public void GameOver()
     {
         Debug.Log("GameOver");
+    }
+
+    // Cross-script used methods
+    public int GetRandomIntWithProbability(int probability, int returnTrue, int returnFalse)
+    {
+        // Probability must be between 1 and 99 %
+        int randomInt = Random.Range(1, 99);
+
+        if (randomInt < probability)
+        {
+            return returnTrue;
+        }
+        else
+        {
+            return returnFalse;
+        }
     }
 }

@@ -683,9 +683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawnManager
   gameManager: {fileID: 1420733075}
-  RockPrefab: {fileID: 3769643426819799595, guid: a2743e47cb71edf4c92d9f796589863b, type: 3}
-  CactusPrefab: {fileID: 3769643426819799595, guid: b3073fbb667cffe489ff6d7ec3d3caf9, type: 3}
-  TreePrefab: {fileID: 3769643426819799595, guid: 0825ed81d94e0fa4c8a093080bf43ac2, type: 3}
+  obstaclePrefab: {fileID: 3769643426819799595, guid: a2743e47cb71edf4c92d9f796589863b, type: 3}
   obstaclesToSpawn: 100
   obstacles: []
 --- !u!1 &1487916172

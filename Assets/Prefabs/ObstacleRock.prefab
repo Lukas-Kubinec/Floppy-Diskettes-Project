@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9110344313323669699}
-  - component: {fileID: -4070282056420555562}
   - component: {fileID: -4567593055677872362}
+  - component: {fileID: 7394225640501659883}
   m_Layer: 0
-  m_Name: ObstaclePlaceholder
+  m_Name: ObstacleRock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,22 +33,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-4070282056420555562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3769643426819799595}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74b52df10131c8d45964ef665f79c91e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObstacleGenerator
-  meshParts:
-  - {fileID: 1145285399675760984, guid: 4b8ecb0b3d4826341b2897f5ee4e2057, type: 3}
-  - {fileID: 9222330663244621475, guid: c9c872d7d63f9c2408458360db1d6c75, type: 3}
-  - {fileID: 5673094388953224318, guid: 7c57c1d6ac9b36948a4d54792cf184b6, type: 3}
 --- !u!65 &-4567593055677872362
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -68,5 +52,29 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 3, y: 3, z: 3}
+  m_Center: {x: 1, y: 0, z: 1}
+--- !u!114 &7394225640501659883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3769643426819799595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bd25ff5d4e4eda4d84d12ab19dcd2d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralObstacleGenerator
+  sizeX: 3
+  sizeY: 3
+  sizeZ: 3
+  collapseProbability: 70
+  cellMustBeSupported: 1
+  sideCellsMustBeRotatedTowardCentre: 0
+  centreMustBeOneType: 0
+  enableRandomRotation: 1
+  meshParts:
+  - {fileID: 1145285399675760984, guid: 4b8ecb0b3d4826341b2897f5ee4e2057, type: 3}
+  - {fileID: 9222330663244621475, guid: c9c872d7d63f9c2408458360db1d6c75, type: 3}
+  - {fileID: 5673094388953224318, guid: 7c57c1d6ac9b36948a4d54792cf184b6, type: 3}

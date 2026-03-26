@@ -44,7 +44,10 @@ public class ObstacleGenerator : MonoBehaviour
                 {
                     if (grid[z,y,x][0] != 0)
                     {
-                        var newObs = Instantiate(meshParts[y], pos, Quaternion.identity);
+                        float randRot = Random.Range(-1, 1);
+                        var newRot = new Quaternion(randRot, randRot, randRot, 1);
+                        var newObs = Instantiate(meshParts[y], pos, newRot);
+
                         newObs.transform.SetParent(this.transform);
                         var goPos = new Vector3(x, y, z);
                         newObs.transform.localPosition = goPos;
@@ -64,7 +67,7 @@ public class ObstacleGenerator : MonoBehaviour
 
     static bool CollapseCell()
     {
-        // 1. Find cell with lowest entropy (>1 option)
+        // Find cell with lowest entropy
         int minEntropy = int.MaxValue;
         int targetX = -1, targetY = -1; int targetZ = -1;
 
@@ -75,7 +78,7 @@ public class ObstacleGenerator : MonoBehaviour
                 for (int x = 0; x < size; x++)
                 {
                     int entropy = grid[z, y, x].Count;
-                    if (entropy > 1 && entropy < minEntropy)
+                    if (entropy > 1.0f && entropy < minEntropy)
                     {
                         minEntropy = entropy;
                         targetX = x; targetY = y; targetZ = z;
@@ -98,6 +101,7 @@ public class ObstacleGenerator : MonoBehaviour
         // 3. Propagate (Simple adjacency)
         Propagate(targetX, targetY, targetZ);
         return true;
+
     }
 
     static void Propagate(int x, int y, int z)
@@ -106,27 +110,6 @@ public class ObstacleGenerator : MonoBehaviour
         int[] dy = {1, -1, 0, 0 , 0, 0};
         int[] dz = { 0, 0, 0, 0, 1, -1 };
 
-        // Checking the top part
-        for (int _z = 0; _z < 3; _z++)
-        {
-            for (int _x = 0; _x < 3; _x++)
-            {
-                // Ensure a cell is underneath
-                if (grid[_z, 2, _x][0] != 0)
-                {
-                    if (grid[_z, 1, _x][0] != 0)
-                    {
-                        // There is a block supporting the one on top
-                        //Debug.Log("Yes");
-                    } else
-                    {
-                        // There is no block supporting the one on top
-                        //Debug.Log("No support");
-                        //break;
-                    }
-                }
-            }
-        }
 
         for (int i = 0; i < 6; i++)
         {
@@ -159,9 +142,17 @@ public class ObstacleGenerator : MonoBehaviour
              */
             int nx = x + dx[i], ny = y + dy[i], nz = z + dz[i];
 
+            if (nx>0 && nz > 0 && ny == 1)
+            {
+
+            }
+
             if (nx >= 0 && nx < size && ny >= 0 && ny < size && nz >= 0 && nz < size && grid[nz, ny, nx].Count > 1)
             {
                 // All cubes within
+            } else
+            {
+                //Debug.Log("DDD");
             }
         }
     }
