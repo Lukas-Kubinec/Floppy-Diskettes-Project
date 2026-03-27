@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
         if (!worldGenerated)
         {
             worldGenerator.BeginGenerateTerrainAndSpawns();
-            worldGenerated = true;
+            if (worldGenerator.GetWorldIsReady()) { worldGenerated = true; } // Continues only if the world is built
         } else if (worldGenerated && !obstacleSpawnManager.AllObstaclesSpawned())
         {
             obstacleSpawnManager.SetObstacleSpawn(true);

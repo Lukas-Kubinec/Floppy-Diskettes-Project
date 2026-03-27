@@ -262,6 +262,9 @@ public class ProceduralObstacleGenerator : MonoBehaviour
             // Rotates by set amount (branches, etc.)
             var initialRotation = Quaternion.Euler(0, rotateBy, 0);
             newObs = Instantiate(meshPart, originPosition, initialRotation);
+            // Zeros the spawn location to ensure that the branch spawns in the centre and is rotated around it
+            x = 0;
+            z = 0;
         } else
         {
             // No rotation to object

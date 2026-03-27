@@ -9,6 +9,9 @@ public class WorldGenerator : MonoBehaviour
 {
     public GameManager gameManager;
 
+    // Generator checker
+    private bool worldIsReady = false; // Used by Game Manger to ensure the map is generated
+
     // Uses Perlin, Cnoise and Snoise(Simplex) noise generators
     [Header("Noise Generator")]
     public bool usePerlinNoise = true; // Default method
@@ -76,6 +79,11 @@ public class WorldGenerator : MonoBehaviour
         return WorldTerrain;
     }
 
+    public bool GetWorldIsReady()
+    {
+        return worldIsReady;
+    }
+
     public void BakeNavigation()
     {
         navMesh.BuildNavMesh();
@@ -83,16 +91,24 @@ public class WorldGenerator : MonoBehaviour
 
     public void BeginGenerateTerrainAndSpawns()
     {
+        // The offset is changed if random seed is enabled
         CheckRandomSeed();
+
+        // Creates all the necessary textures
         PrepareTexture();
+
         // Generates height values
         generatedTerrainHeightsValues = GenerateNoiseMap(xTexSize,yTexSize);
         generatedZombieSpawnHeightsValues = GenerateNoiseMap(xSpawnSize, zSpawnSize);
         generatedObstacleSpawnHeightsValues = GenerateNoiseMap(xSpawnSize, zSpawnSize);
+
         // Uses generated data for methods
         GenerateTerrain(generatedTerrainHeightsValues);
         spawnZombieLocations = BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedZombieSpawnHeightsValues); // Generates random zombie spawn points
         spawnObstacleLocations = BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedObstacleSpawnHeightsValues); // Generates random zombie spawn points
+        
+        // The world is ready
+        worldIsReady = true;
     }
 
     private List<Vector3> BeginGenerateSpawnPoints(float[,] TerrainHeights, float[,] SpawnHeights)
@@ -154,12 +170,7 @@ public class WorldGenerator : MonoBehaviour
 
     private void GenerateTerrain(float[,] generatedHeights)
     {
-        if (generatedHeights is null)
-        {
-            throw new ArgumentNullException(nameof(generatedHeights));
-        }
-
-        WorldTerrain.terrainData.SetHeights(0, 0, generatedHeights);
+        WorldTerrain.terrainData.SetHeights(0, 0, generatedHeights); // Applies the height map
 
         // Texturing
         for (int y=0; y < yTexSize; y++)

@@ -14,7 +14,8 @@ public class SkillManager : MonoBehaviour
 
 
     [Header("What effects Changes")]
-    public float kills;
+    public float totalkills;
+    public float killsThisWave;
     public float accuracy;
     public float damageTaken;
     public float deaths;
@@ -45,8 +46,9 @@ public class SkillManager : MonoBehaviour
         waveCount++;
 
         numberofZombiesprevwave = numberOfZombiesToSpawn;
-        numberOfZombiesToSpawn = kills + waveCount + (accuracy / 10) - (damageTaken / 10) - deaths;
+        numberOfZombiesToSpawn = totalkills + waveCount + (accuracy / 10) - (damageTaken / 10) - deaths;
         zombieSpawnRate = numberOfZombiesToSpawn / waveCount;
+        killsThisWave = 0;
 
         if (numberOfZombiesToSpawn < numberofZombiesprevwave)
             gameManager.GameOver();
