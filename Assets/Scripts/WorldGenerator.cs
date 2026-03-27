@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.LightTransport;
 
 public class WorldGenerator : MonoBehaviour
 {
@@ -16,9 +17,14 @@ public class WorldGenerator : MonoBehaviour
 
     // Size of the generated map
     [Header("Size of generated texture")]
-    public int xTexSize = 513; // Must be set to size of terrain
-    public int yTexSize = 513; // Must be set to size of terrain
-    public bool automaticSize = false; // Automatically sets texture size to terrain size
+    public int xTexSize = 513; // Terrain settings must be adjusted !
+    public int yTexSize = 513; // Terrain settings must be adjusted !
+    public bool automaticTexSize = false; // Automatically sets texture size to terrain size
+    [Header("Size of spawn texture")]
+    public int xSpawnSize = 513; // Terrain settings must be adjusted !
+    public int zSpawnSize = 513; // Terrain settings must be adjusted !
+    public bool automaticSpawnSize = false; // Automatically sets texture size to terrain size
+    public int spawnCreationProbability = 75;
 
     // Origin of the generated world
     [Header("Texture offset")]
@@ -46,14 +52,15 @@ public class WorldGenerator : MonoBehaviour
 
     // Generation of 2D textures
     private Texture2D GeneratedColourTexture;
-    private Texture2D GeneratedGrayscaleTexture;
 
     // Terrain 
     private Terrain WorldTerrain;
     private NavMeshSurface navMesh;
-    public List<Vector3> spawnLocations = new();
+    public List<Vector3> spawnZombieLocations = new();
+    public List<Vector3> spawnObstacleLocations = new();
     public float[,] generatedTerrainHeightsValues;
     public float[,] generatedZombieSpawnHeightsValues;
+    public float[,] generatedObstacleSpawnHeightsValues;
 
 
     private void Start()
@@ -78,44 +85,41 @@ public class WorldGenerator : MonoBehaviour
     {
         CheckRandomSeed();
         PrepareTexture();
-        generatedTerrainHeightsValues = GenerateNoiseMap();
-        generatedZombieSpawnHeightsValues = GenerateNoiseMap();
+        // Generates height values
+        generatedTerrainHeightsValues = GenerateNoiseMap(xTexSize,yTexSize);
+        generatedZombieSpawnHeightsValues = GenerateNoiseMap(xSpawnSize, zSpawnSize);
+        generatedObstacleSpawnHeightsValues = GenerateNoiseMap(xSpawnSize, zSpawnSize);
+        // Uses generated data for methods
         GenerateTerrain(generatedTerrainHeightsValues);
-        BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedZombieSpawnHeightsValues); // Generates random spawn points
+        spawnZombieLocations = BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedZombieSpawnHeightsValues); // Generates random zombie spawn points
+        spawnObstacleLocations = BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedObstacleSpawnHeightsValues); // Generates random zombie spawn points
     }
 
-    private void BeginGenerateSpawnPoints(float[,] TerrainHeights, float[,] SpawnHeights)
+    private List<Vector3> BeginGenerateSpawnPoints(float[,] TerrainHeights, float[,] SpawnHeights)
     {
-        if (TerrainHeights is null)
-        {
-            throw new ArgumentNullException(nameof(TerrainHeights));
-        }
-
-        if (SpawnHeights is null)
-        {
-            throw new ArgumentNullException(nameof(SpawnHeights));
-        }
-
         //spawnLocations = new float[xTexSize, yTexSize];
         float spawnAfterThreshold = 0.7f;
-        int spawnChance = 30; // % chance of spawning
+        List < Vector3 > newSpawnPoints = new List<Vector3>();
 
-        for (int y = 0; y < yTexSize; y++)
+        for (int y = 0; y < zSpawnSize; y++)
         {
-            for (int x = 0; x < xTexSize; x++)
+            for (int x = 0; x < xSpawnSize; x++)
             {
                 if (spawnAfterThreshold >= SpawnHeights[y,x])
                 {
                     var spawnRandomValue = UnityEngine.Random.Range(0, 100);
 
-                    if (spawnRandomValue < spawnChance)
+                    if (spawnRandomValue < spawnCreationProbability)
                     {
                         var currentHeight = WorldTerrain.SampleHeight(new Vector3(x, 0, y));
-                        spawnLocations.Add(new Vector3(x, currentHeight, y));
+                        newSpawnPoints.Add(new Vector3(x, currentHeight, y));
                     }
                 }
             }
         }
+
+        // returns complete table
+        return newSpawnPoints;
     }
 
     private void CheckRandomSeed()
@@ -130,16 +134,22 @@ public class WorldGenerator : MonoBehaviour
 
     private void PrepareTexture()
     {
-        // Checks if automatic size is enabled, then sets it to terrain data
-        if (automaticSize)
+        // Automatic size for generated texture
+        if (automaticTexSize)
         {
             xTexSize = WorldTerrain.terrainData.heightmapResolution;
             yTexSize = WorldTerrain.terrainData.heightmapResolution;
         }
 
+        // Automatic size for generated spawns
+        if (automaticSpawnSize)
+        {
+            xSpawnSize = (int)WorldTerrain.terrainData.size.x;
+            zSpawnSize = (int)WorldTerrain.terrainData.size.x;
+        }
+
         // Creates new 2D texture that will be used to hold generated noise data
         GeneratedColourTexture = new Texture2D(xTexSize, yTexSize);
-        GeneratedGrayscaleTexture = new Texture2D(xTexSize, yTexSize);
     }
 
     private void GenerateTerrain(float[,] generatedHeights)
@@ -160,63 +170,61 @@ public class WorldGenerator : MonoBehaviour
                 GeneratedColourTexture.SetPixel(x, y, chosenColour);
             }
         }
-        // Colour texture
+        // Applies added colours
         GeneratedColourTexture.Apply();
-        TerrainLayer terrainColourLayer = new()
+
+        //Gets a terrain size
+        var xWorldSize = WorldTerrain.terrainData.size.x;
+        var zWorlsSize = WorldTerrain.terrainData.size.z;
+        TerrainLayer terrainWaterLayer = new()
         {
             diffuseTexture = GeneratedColourTexture,
-            tileSize = new Vector2(yTexSize, yTexSize)
+            tileSize = new Vector2(xWorldSize, zWorlsSize)
         };
 
-        // Grayscale texture - TESTING 
-        GeneratedGrayscaleTexture.Apply();
-        TerrainLayer terrainGrayscaleLayer = new()
-        {
-            diffuseTexture = GeneratedGrayscaleTexture,
-            tileSize = new Vector2(yTexSize, yTexSize)
-        };
-
-        WorldTerrain.terrainData.terrainLayers = new TerrainLayer[] { terrainColourLayer, terrainGrayscaleLayer  };
+        WorldTerrain.terrainData.terrainLayers = new TerrainLayer[] { terrainWaterLayer };
     }
 
-    private Color SelectColour(float sampleValue)
+    private Color SelectColour(float height)
     {
-        Color color = new();
-        if (sampleValue < waterHeightLevel * heightAdjustment)
+        if (height < waterHeightLevel * heightAdjustment)
         {
             // Water
-            color = WaterColour;
+            return WaterColour;
         } 
-        else if (sampleValue < sandHeightLevel * heightAdjustment)
+        else if (height < sandHeightLevel * heightAdjustment)
         {
             // Sand
-            color = SandColour;
+            return SandColour;
         }
-        else if (sampleValue < grassHeightLevel * heightAdjustment)
+        else if (height < grassHeightLevel * heightAdjustment)
         {
             // Grass
-            color = GrassColour;
+            return GrassColour;
         } 
-        else if (sampleValue < mountainHeightLevel * heightAdjustment)
+        else if (height < mountainHeightLevel * heightAdjustment)
         {
             // Mountain
-            color = MountainColour;
+            return MountainColour;
         }
-
-        return color;
+        else
+        {
+            Debug.LogWarning("Error - Texture painting");
+            return GrassColour;
+        }
     }
 
-    private float[,] GenerateNoiseMap()
+    private float[,] GenerateNoiseMap(int xSize, int ySize)
     {
         // Creates 
-        float[,] generatedHeights = new float[xTexSize, yTexSize];
+        float[,] generatedHeights = new float[xSize, ySize];
 
-        for (float y = 0.0f; y < GeneratedColourTexture.height; y++)
+        for (float y = 0.0f; y < ySize; y++)
         {
-            for (float x = 0.0f; x < GeneratedColourTexture.width; x++)
+            for (float x = 0.0f; x < xSize; x++)
             {
-                float xCoord = xTexOffset + x / GeneratedColourTexture.width * mapDetail;
-                float yCoord = yTexOffset + y / GeneratedColourTexture.height * mapDetail;
+                float xCoord = xTexOffset + x / xSize * mapDetail;
+                float yCoord = yTexOffset + y / ySize * mapDetail;
                 float genValue = 0.0f; // Used to store generated value
 
                 if (usePerlinNoise)

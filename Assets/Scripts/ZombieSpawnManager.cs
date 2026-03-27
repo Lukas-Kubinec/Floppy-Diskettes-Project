@@ -83,7 +83,7 @@ public class ZombieSpawnManager : MonoBehaviour
 
     private void CreateZombieSpawner()
     {
-        var spawnLocations = gameManager.worldGenerator.spawnLocations;
+        var spawnLocations = gameManager.worldGenerator.spawnZombieLocations;
         int spawnLocationsLenght = UnityEngine.Random.Range(0, spawnLocations.Count);
 
         SpawnZombie(spawnLocations[spawnLocationsLenght]);

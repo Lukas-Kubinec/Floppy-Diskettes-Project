@@ -56,7 +56,7 @@ public class ObstacleSpawnManager : MonoBehaviour
 
     private void StartSpawningObstacles()
     {
-        var spawnLocations = gameManager.worldGenerator.spawnLocations;
+        var spawnLocations = gameManager.worldGenerator.spawnObstacleLocations;
         int randomLocationIndex = UnityEngine.Random.Range(0, spawnLocations.Count);
 
         var heightmapLocations = gameManager.worldGenerator.generatedTerrainHeightsValues;
@@ -74,7 +74,6 @@ public class ObstacleSpawnManager : MonoBehaviour
 
     void SpawnObstacle(Vector3 spawnLocation, float heightAtPoint)
     {
-        Debug.Log(heightAtPoint);
         // Gets int based on %chance probability
         var chance = gameManager.GetRandomIntWithProbability(50, 1, 0);
 

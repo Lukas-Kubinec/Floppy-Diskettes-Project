@@ -32,8 +32,8 @@ public class SkillManager : MonoBehaviour
 
     public void RespawnPlayerCentred()
     {
-        var xTerrainCentre = gameManager.worldGenerator.xTexSize / 2;
-        var yTerrainCentre = gameManager.worldGenerator.yTexSize / 2;
+        var xTerrainCentre = gameManager.worldGenerator.xSpawnSize / 2;
+        var yTerrainCentre = gameManager.worldGenerator.zSpawnSize / 2;
         var worldTerrain = gameManager.worldGenerator.GetTerrainObject();
         var heightTerrainCentre = worldTerrain.SampleHeight(new Vector3(xTerrainCentre, yTerrainCentre)) ;
 

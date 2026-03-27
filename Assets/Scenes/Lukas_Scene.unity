@@ -437,9 +437,13 @@ MonoBehaviour:
   usePerlinNoise: 1
   useCNoise: 0
   useSNoise: 0
-  xTexSize: 513
-  yTexSize: 513
-  automaticSize: 1
+  xTexSize: 1025
+  yTexSize: 1025
+  automaticTexSize: 1
+  xSpawnSize: 512
+  zSpawnSize: 512
+  automaticSpawnSize: 0
+  spawnCreationProbability: 75
   xTexOffset: 0
   yTexOffset: 0
   mapDetail: 5
@@ -453,7 +457,8 @@ MonoBehaviour:
   sandHeightLevel: 0.5
   grassHeightLevel: 0.75
   mountainHeightLevel: 1
-  spawnLocations: []
+  spawnZombieLocations: []
+  spawnObstacleLocations: []
 --- !u!154 &874872130
 TerrainCollider:
   m_ObjectHideFlags: 0
@@ -507,7 +512,7 @@ Terrain:
   m_DeringLightProbesForTrees: 1
   m_ReceiveGI: 1
   m_ScaleInLightmap: 0.0256
-  m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
+  m_LightmapParameters: {fileID: 0}
   m_GroupingID: 0
   m_RenderingLayerMask: 1
   m_AllowAutoConnect: 1
@@ -686,7 +691,7 @@ MonoBehaviour:
   RockPrefab: {fileID: 3769643426819799595, guid: a2743e47cb71edf4c92d9f796589863b, type: 3}
   CactusPrefab: {fileID: 3769643426819799595, guid: b3073fbb667cffe489ff6d7ec3d3caf9, type: 3}
   TreePrefab: {fileID: 3769643426819799595, guid: 0825ed81d94e0fa4c8a093080bf43ac2, type: 3}
-  obstaclesToSpawn: 100
+  obstaclesToSpawn: 50
   obstacles: []
 --- !u!1 &1487916172
 GameObject:
