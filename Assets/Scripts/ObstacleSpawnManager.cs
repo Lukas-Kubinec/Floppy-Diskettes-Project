@@ -7,6 +7,7 @@ public class ObstacleSpawnManager : MonoBehaviour
 
     [Header("GameObjects")]
     public GameObject RockPrefab;
+    public GameObject LowRockPrefab;
     public GameObject CactusPrefab;
     public GameObject TreePrefab;
     private GameObject obstacle;
@@ -56,19 +57,22 @@ public class ObstacleSpawnManager : MonoBehaviour
 
     private void StartSpawningObstacles()
     {
+        // Size ratio between Heights and Spawns map
+        var sizeRatio = gameManager.worldGenerator.GetSizeRatio();
+
+        // Spawn location
         var spawnLocations = gameManager.worldGenerator.spawnObstacleLocations;
         int randomLocationIndex = UnityEngine.Random.Range(0, spawnLocations.Count);
-
         var heightmapLocations = gameManager.worldGenerator.generatedTerrainHeightsValues;
-        //float heightAtPoint = heightmapLocations[(int)spawnLocations[randomLocationIndex].y, (int)spawnLocations[randomLocationIndex].x];
-        float mapX = spawnLocations[randomLocationIndex].x;
-        float mapY = spawnLocations[randomLocationIndex].y;
-        float heightAtPoint = gameManager.worldGenerator.GetTerrainObject().terrainData.GetHeight((int)mapX, (int)mapY);
+        float mapX = spawnLocations[randomLocationIndex].x*sizeRatio;
+        float mapY = spawnLocations[randomLocationIndex].y*sizeRatio;
+
+        // Calculation of the spawn height
+        float heightAtPoint = gameManager.worldGenerator.GetTerrainObject().SampleHeight(spawnLocations[randomLocationIndex]);
         float heightMaximum = gameManager.worldGenerator.GetTerrainObject().terrainData.size.y;
         float heightAdjustment = gameManager.worldGenerator.heightAdjustment;
-        Debug.Log("x"+heightAtPoint);
         heightAtPoint = heightAtPoint / (heightMaximum * heightAdjustment);
-        Debug.Log("y" + heightAtPoint);
+
         if (AllObstaclesSpawned())
         {
             // Disables obstacle spawn when enough is reached
@@ -84,7 +88,6 @@ public class ObstacleSpawnManager : MonoBehaviour
     {
         float heightAdjustment = gameManager.worldGenerator.heightAdjustment;
         var chance = gameManager.GetRandomIntWithProbability(50, 1, 0); // Gets int based on %chance probability
-
         if (heightAtPoint < waterLevel)
         {
             // Only rocks spawn in water
@@ -104,23 +107,11 @@ public class ObstacleSpawnManager : MonoBehaviour
         else if (heightAtPoint < grassLevel)
         {
             obstacle = Instantiate(TreePrefab, spawnLocation, Quaternion.identity);
-
-            // Rocks and Trees
-            /*
-            if (chance == 0)
-            {
-                obstacle = Instantiate(RockPrefab, spawnLocation, Quaternion.identity);
-            }
-            else
-            {
-                obstacle = Instantiate(TreePrefab, spawnLocation, Quaternion.identity);
-            }
-            */
         }
         else
         {
-            // Only Trees on top of the mountains
-            obstacle = Instantiate(TreePrefab, spawnLocation, Quaternion.identity);
+            // Only Low Rocks spawn on top of the mountains
+            obstacle = Instantiate(LowRockPrefab, spawnLocation, Quaternion.identity);
         }
 
         // Rotates object in line with terrain surface

@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public InputManager inputManager;
     public WorldGenerator worldGenerator;
     public ObstacleSpawnManager obstacleSpawnManager;
+    public CameraEffects cameraEffects;
 
     // Game states variables
     bool worldGenerated = false;
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
         // The first initial script that starts all the necessary components in one order, in order to minimise the conflicts.
         if (!worldGenerated)
         {
+            cameraEffects.SetLoadingScreen(true);
             worldGenerator.BeginGenerateTerrainAndSpawns();
             if (worldGenerator.GetWorldIsReady()) { worldGenerated = true; } // Continues only if the world is built
         } else if (worldGenerated && !obstacleSpawnManager.AllObstaclesSpawned())
@@ -51,7 +53,9 @@ public class GameManager : MonoBehaviour
         {
             skillManager.RespawnPlayerCentred();
             PlayerIsSpawned = true;
-        } else if (PlayerIsSpawned)
+            cameraEffects.SetLoadingScreen(false);
+        }
+        else if (PlayerIsSpawned)
         {
             zombieSpawnManager.SetZombieSpawn(true);
             gameIsReady = true; // World initiation is complete

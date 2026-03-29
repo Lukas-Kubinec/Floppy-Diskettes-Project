@@ -89,6 +89,13 @@ public class WorldGenerator : MonoBehaviour
         navMesh.BuildNavMesh();
     }
 
+    public float GetSizeRatio()
+    {
+        // Calculates the size ratio between Heights map and Spawns Map
+        float ratio = xTexSize / xSpawnSize;
+        return ratio;
+    }
+
     public void BeginGenerateTerrainAndSpawns()
     {
         // The offset is changed if random seed is enabled
