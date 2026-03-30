@@ -44,11 +44,14 @@ public class WeaponManager : MonoBehaviour
 
         if (gameManager.inputManager.GetAttackInput())
         {
+            // Checks if something is hit
             if (Physics.Raycast(CinemaCam.transform.position, CinemaCam.transform.forward, out hit, weaponRange, ZombieLayerMask) && canShoot)
             {
+                // Shows the gun shot trails/line
+                gameManager.cameraEffects.ShowShootingEffect();
+
                 canShoot = false;
                 shotDelay = 0;
-
 
                 var zombieScript = hit.collider.GetComponentInParent<ZombieScript>();
                 if (zombieScript != null)

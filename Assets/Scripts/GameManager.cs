@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public WorldGenerator worldGenerator;
     public ObstacleSpawnManager obstacleSpawnManager;
     public CameraEffects cameraEffects;
+    public CharacterTriggerCollisionController characterTriggerCollisionController;
 
     // Game states variables
     bool worldGenerated = false;

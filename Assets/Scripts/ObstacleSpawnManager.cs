@@ -116,9 +116,9 @@ public class ObstacleSpawnManager : MonoBehaviour
 
         // Rotates object in line with terrain surface
         RaycastHit hit;
-        if (Physics.Raycast(this.transform.position + Vector3.up, Vector3.down, out hit))
+        if (Physics.Raycast(obstacle.transform.position + Vector3.up, Vector3.down, out hit))
         {
-            this.transform.up = hit.normal;
+            obstacle.transform.up = hit.normal;
         }
 
         obstacles.Add(obstacle);
