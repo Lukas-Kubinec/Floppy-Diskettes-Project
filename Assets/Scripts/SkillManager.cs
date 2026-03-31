@@ -38,7 +38,7 @@ public class SkillManager : MonoBehaviour
         var worldTerrain = gameManager.worldGenerator.GetTerrainObject();
         var heightTerrainCentre = worldTerrain.SampleHeight(new Vector3(xTerrainCentre, yTerrainCentre)) ;
 
-        playerObject.transform.position = new Vector3(xTerrainCentre,heightTerrainCentre + 1.0f , yTerrainCentre);
+        playerObject.transform.position = new Vector3(xTerrainCentre,heightTerrainCentre + 2.0f , yTerrainCentre);
     }
 
     public void CalcNextWave()

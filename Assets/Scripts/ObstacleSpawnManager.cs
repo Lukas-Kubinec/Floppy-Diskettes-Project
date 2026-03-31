@@ -7,7 +7,6 @@ public class ObstacleSpawnManager : MonoBehaviour
 
     [Header("GameObjects")]
     public GameObject RockPrefab;
-    public GameObject LowRockPrefab;
     public GameObject CactusPrefab;
     public GameObject TreePrefab;
     private GameObject obstacle;
@@ -110,8 +109,8 @@ public class ObstacleSpawnManager : MonoBehaviour
         }
         else
         {
-            // Only Low Rocks spawn on top of the mountains
-            obstacle = Instantiate(LowRockPrefab, spawnLocation, Quaternion.identity);
+            // Only Trees spawn on top of the mountains
+            obstacle = Instantiate(TreePrefab, spawnLocation, Quaternion.identity);
         }
 
         // Rotates object in line with terrain surface

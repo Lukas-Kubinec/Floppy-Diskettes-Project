@@ -197,7 +197,9 @@ public class WorldGenerator : MonoBehaviour
         TerrainLayer terrainWaterLayer = new()
         {
             diffuseTexture = GeneratedColourTexture,
-            tileSize = new Vector2(xWorldSize, zWorlsSize)
+            tileSize = new Vector2(xWorldSize, zWorlsSize),
+            metallic = 0.0f,
+            smoothness = 0.0f
         };
 
         WorldTerrain.terrainData.terrainLayers = new TerrainLayer[] { terrainWaterLayer };
@@ -208,17 +210,23 @@ public class WorldGenerator : MonoBehaviour
         if (height < waterHeightLevel * heightAdjustment)
         {
             // Water
-            return WaterColour;
+            height = (height - 0.2f) / (waterHeightLevel - 0.2f);
+            var chosen = Color.Lerp(WaterColour, SandColour, height);
+            return chosen;
         } 
         else if (height < sandHeightLevel * heightAdjustment)
         {
             // Sand
-            return SandColour;
+            height = (height - waterHeightLevel - 0.05f) / (sandHeightLevel - waterHeightLevel - 0.05f);
+            var chosen = Color.Lerp(SandColour, GrassColour, height);
+            return chosen;
         }
         else if (height < grassHeightLevel * heightAdjustment)
         {
             // Grass
-            return GrassColour;
+            height = (height - sandHeightLevel - 0.05f) / (grassHeightLevel - sandHeightLevel - 0.05f);
+            var chosen = Color.Lerp(GrassColour, MountainColour, height);
+            return chosen;
         } 
         else if (height < mountainHeightLevel * heightAdjustment)
         {
