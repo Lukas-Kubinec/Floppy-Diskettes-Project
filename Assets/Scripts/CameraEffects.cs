@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CameraEffects : MonoBehaviour
@@ -25,6 +24,7 @@ public class CameraEffects : MonoBehaviour
     [Header("UnderWater effect")]
     public Color UnderWaterColour;
     public float UnderWaterFogDensity;
+    public float UnderWaterLightIntensity = 0.5f;
     private bool isUnderWater = false;
 
     [Header("Loading Screen")]
@@ -32,11 +32,16 @@ public class CameraEffects : MonoBehaviour
     public float LoadingFogDensity;
     private bool isLoading = false;
 
+    [Header("Sun Light")]
+    public Light SunLight;
+    private float defaultLightIntensity;
+
     private void Awake()
     {
         // Gets the default fog colour & density
         NormalFogColour = RenderSettings.fogColor;
         NormalFogDensity = RenderSettings.fogDensity;
+        defaultLightIntensity = SunLight.intensity;
     }
 
     private void FixedUpdate()
@@ -70,29 +75,30 @@ public class CameraEffects : MonoBehaviour
         shotLine.SetPosition(1, endPoint);
     }
 
-    private void SetScreenEffect(Color effectColour, float fogDensity)
+    private void SetScreenEffect(Color effectColour, float fogDensity, float lightIntensity)
     {
         RenderSettings.fogColor = effectColour;
         RenderSettings.fogDensity = fogDensity;
+        SunLight.intensity = lightIntensity;
     }
 
     private void HandleScreenEffects()
     {
         if (isLoading)
         {
-            SetScreenEffect(LoadingScreenColour, LoadingFogDensity); // Adjusts the colour and density of fog
+            SetScreenEffect(LoadingScreenColour, LoadingFogDensity, defaultLightIntensity); // Adjusts the colour and density of fog
         }
         else if (isDead)
         {
-            SetScreenEffect(DeathScreenColour, DeathFogDensity);
+            SetScreenEffect(DeathScreenColour, DeathFogDensity, defaultLightIntensity);
         }
         else if (isUnderWater)
         {
-            SetScreenEffect(UnderWaterColour, UnderWaterFogDensity);
+            SetScreenEffect(UnderWaterColour, UnderWaterFogDensity, UnderWaterLightIntensity);
         }
         else
         {
-            SetScreenEffect(NormalFogColour, NormalFogDensity); // Default settings
+            SetScreenEffect(NormalFogColour, NormalFogDensity, defaultLightIntensity); // Default settings
         }
     }
 
