@@ -94,7 +94,7 @@ public class ZombieSpawnManager : MonoBehaviour
         var currentZombie = Instantiate(zombiePrefab, spawnLocation, Quaternion.identity);
         var zombieScript = currentZombie.GetComponent<ZombieScript>();
         //ZombieData data = new() { nav = zombieScript.agent, zombieSpeed = 10f };
-        ZombieData data = new ZombieData { nav = zombieScript.agent};
+        ZombieData data = new() { nav = zombieScript.agent };
         zombieScript.thisZombieData = data;
         zombies.Add(data);
         currentNumberOfZombiesSpawned++;

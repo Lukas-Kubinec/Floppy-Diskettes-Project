@@ -4,6 +4,7 @@ using Unity.AI.Navigation;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.LightTransport;
+using UnityEngine.SocialPlatforms;
 
 public class WorldGenerator : MonoBehaviour
 {
@@ -37,7 +38,6 @@ public class WorldGenerator : MonoBehaviour
     // Map Detail setting
     [Header("Map detail setting")]
     public float mapDetail = 1.0f;
-    public float heightAdjustment = 1.0f;
     public bool randomSeed = false; // Randomly offsets texture
 
     // Colours
@@ -56,7 +56,7 @@ public class WorldGenerator : MonoBehaviour
     // Generation of 2D textures
     private Texture2D GeneratedColourTexture;
 
-    // Terrain 
+    // Terrain
     private Terrain WorldTerrain;
     private NavMeshSurface navMesh;
     public List<Vector3> spawnZombieLocations = new();
@@ -64,7 +64,6 @@ public class WorldGenerator : MonoBehaviour
     public float[,] generatedTerrainHeightsValues;
     public float[,] generatedZombieSpawnHeightsValues;
     public float[,] generatedObstacleSpawnHeightsValues;
-
 
     private void Start()
     {
@@ -89,6 +88,40 @@ public class WorldGenerator : MonoBehaviour
         navMesh.BuildNavMesh();
     }
 
+    public void CreateGrass()
+    {
+
+        int detailRes = WorldTerrain.terrainData.detailResolution;
+        float terrainMaxHeight = WorldTerrain.terrainData.size.y;
+
+        //float[,] heightmapData = WorldTerrain.terrainData.GetHeights(0, 0, detailRes, detailRes);
+        int[,] generatedGrassMap = new int[detailRes, detailRes];
+
+        for (int y=0; y < detailRes; y++)
+        {
+            for (int x = 0; x < detailRes; x++)
+            {
+                float normX = x / (float)detailRes;
+                float normY = y / (float)detailRes;
+
+                // Get heigh at point
+                float worldHeight = WorldTerrain.terrainData.GetInterpolatedHeight(normX, normY) / terrainMaxHeight;
+
+
+                if (sandHeightLevel < worldHeight && worldHeight < grassHeightLevel)
+                {
+                    generatedGrassMap[y,x] = 25;
+                } else
+                {
+                    generatedGrassMap[y, x] = 0;
+                }
+            }
+        }
+
+        WorldTerrain.terrainData.SetDetailLayer(0,0,0, generatedGrassMap);
+        
+    }
+
     public float GetSizeRatio()
     {
         // Calculates the size ratio between Heights map and Spawns Map
@@ -111,18 +144,18 @@ public class WorldGenerator : MonoBehaviour
 
         // Uses generated data for methods
         GenerateTerrain(generatedTerrainHeightsValues);
-        spawnZombieLocations = BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedZombieSpawnHeightsValues); // Generates random zombie spawn points
-        spawnObstacleLocations = BeginGenerateSpawnPoints(generatedTerrainHeightsValues, generatedObstacleSpawnHeightsValues); // Generates random zombie spawn points
-        
+        spawnZombieLocations = BeginGenerateSpawnPoints(generatedZombieSpawnHeightsValues); // Generates random zombie spawn points
+        spawnObstacleLocations = BeginGenerateSpawnPoints(generatedObstacleSpawnHeightsValues); // Generates random zombie spawn points
+
         // The world is ready
         worldIsReady = true;
     }
 
-    private List<Vector3> BeginGenerateSpawnPoints(float[,] TerrainHeights, float[,] SpawnHeights)
+    private List<Vector3> BeginGenerateSpawnPoints(float[,] SpawnHeights)
     {
         //spawnLocations = new float[xTexSize, yTexSize];
         float spawnAfterThreshold = 0.7f;
-        List < Vector3 > newSpawnPoints = new List<Vector3>();
+        List<Vector3> newSpawnPoints = new();
 
         for (int y = 0; y < zSpawnSize; y++)
         {
@@ -184,51 +217,54 @@ public class WorldGenerator : MonoBehaviour
         {
             for (int x=0; x < xTexSize; x++)
             {
+                // paints the grass texture
                 var chosenColour = SelectColour(generatedHeights[y,x]);
                 GeneratedColourTexture.SetPixel(x, y, chosenColour);
             }
         }
+
         // Applies added colours
         GeneratedColourTexture.Apply();
 
         //Gets a terrain size
         var xWorldSize = WorldTerrain.terrainData.size.x;
         var zWorlsSize = WorldTerrain.terrainData.size.z;
-        TerrainLayer terrainWaterLayer = new()
+        TerrainLayer terrainGroundLayer = new()
         {
             diffuseTexture = GeneratedColourTexture,
             tileSize = new Vector2(xWorldSize, zWorlsSize),
             metallic = 0.0f,
             smoothness = 0.0f
         };
-
-        WorldTerrain.terrainData.terrainLayers = new TerrainLayer[] { terrainWaterLayer };
+        // Applies the generated texture to terrain
+        WorldTerrain.terrainData.terrainLayers = new TerrainLayer[] { terrainGroundLayer };
     }
 
     private Color SelectColour(float height)
     {
-        if (height < waterHeightLevel * heightAdjustment)
+        if (height < waterHeightLevel)
         {
             // Water
             height = (height - 0.2f) / (waterHeightLevel - 0.2f);
             var chosen = Color.Lerp(WaterColour, SandColour, height);
             return chosen;
         } 
-        else if (height < sandHeightLevel * heightAdjustment)
+        else if (height < sandHeightLevel)
         {
             // Sand
             height = (height - waterHeightLevel - 0.05f) / (sandHeightLevel - waterHeightLevel - 0.05f);
             var chosen = Color.Lerp(SandColour, GrassColour, height);
             return chosen;
         }
-        else if (height < grassHeightLevel * heightAdjustment)
+        else if (height < grassHeightLevel)
         {
             // Grass
             height = (height - sandHeightLevel - 0.05f) / (grassHeightLevel - sandHeightLevel - 0.05f);
             var chosen = Color.Lerp(GrassColour, MountainColour, height);
+
             return chosen;
         } 
-        else if (height < mountainHeightLevel * heightAdjustment)
+        else if (height < mountainHeightLevel)
         {
             // Mountain
             return MountainColour;
@@ -270,7 +306,7 @@ public class WorldGenerator : MonoBehaviour
 
 
                 genValue = Mathf.Clamp(genValue, 0.0f, 1.0f); // Ensures no value goes below or above stated values
-                generatedHeights[(int)x, (int)y] = genValue * heightAdjustment;
+                generatedHeights[(int)x, (int)y] = genValue;
             }
         }
         // Sets terrain height and applies texture 

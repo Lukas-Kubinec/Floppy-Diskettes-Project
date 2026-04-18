@@ -70,9 +70,9 @@ public class GameCharacterController : MonoBehaviour
         Vector2 axis = inputManager.GetMovementInput();
         
         // Getting the camera's rotation and passing it into Vector3 variable
-        Vector3 fwd = new Vector3(-Camera.main.transform.right.z, 0.0f, Camera.main.transform.right.x);
+        Vector3 fwd = new(-Camera.main.transform.right.z, 0.0f, Camera.main.transform.right.x);
         // Calculates the final direction in which the player wants to move
-        Vector3 moveToDirection = (fwd * axis.y * walkSpeed + Camera.main.transform.right * axis.x * walkSpeed + Vector3.up * playerRb.linearVelocity.y);
+        Vector3 moveToDirection = (axis.y * walkSpeed * fwd + axis.x * walkSpeed * Camera.main.transform.right + Vector3.up * playerRb.linearVelocity.y);
         // Moves the player's character
         playerRb.linearVelocity = moveToDirection;
     }
