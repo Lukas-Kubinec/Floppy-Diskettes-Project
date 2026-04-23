@@ -1,0 +1,11 @@
+Sprites:
+Images - bulltet, skull, heart - Flaticon.com'. This cover has been designed using resources from Flaticon.com
+
+Audio:
+gunshot1.wav by Mihacappy -- https://freesound.org/s/833404/ -- License: Creative Commons 0
+
+Assault rifle suppressor gunshot. by SubwaySandwitch420 -- https://freesound.org/s/539141/ -- License: Creative Commons 0
+
+gunshot__high_2.wav by eardeer -- https://freesound.org/s/402009/ -- License: Attribution 4.0
+
+Hurt Me Plenty by Beetlemuse -- https://freesound.org/s/685533/ -- License: Attribution 4.0

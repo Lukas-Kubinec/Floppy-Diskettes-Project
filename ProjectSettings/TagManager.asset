@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Water
+  - AmmoBox
+  - HealthBox
+  - GameLogic
   layers:
   - Default
   - TransparentFX
@@ -15,7 +18,7 @@ TagManager:
   - Grass
   - Gun
   - IgnoreNavMesh
-  - 
+  - Obstacles
   - 
   - 
   - 

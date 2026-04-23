@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9110344313323669699}
   - component: {fileID: -4567593055677872362}
   - component: {fileID: 7394225640501659883}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ObstacleRock
   m_TagString: Untagged
   m_Icon: {fileID: 0}

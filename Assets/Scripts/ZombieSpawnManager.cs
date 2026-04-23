@@ -5,6 +5,20 @@ using UnityEngine.AI;
 public class ZombieData
 {
     public NavMeshAgent nav;
+    public float zombieHealth;
+    public float zombieSpeed;
+    public float zombieDamage;
+    public GameManager gameManager;
+
+    public void SetStats()
+    {
+        gameManager = GameObject.FindGameObjectWithTag("GameLogic").GetComponent<GameManager>();
+        zombieSpeed = gameManager.skillManager.zombieSpeed;
+        zombieHealth = gameManager.skillManager.zombieHealth;
+        zombieDamage = gameManager.skillManager.zombieDamage;
+    }
+
+
 }
 
 public class ZombieSpawnManager : MonoBehaviour
@@ -13,8 +27,9 @@ public class ZombieSpawnManager : MonoBehaviour
     public static ZombieSpawnManager instance;
 
     [Header("GameObjects")]
-    private GameObject player;
     public GameObject zombiePrefab;
+    private GameObject player;
+    private GameObject zombiesParent;
 
     public float currentNumberOfZombiesSpawned;
     public float currentSpawnTimer;
@@ -33,6 +48,7 @@ public class ZombieSpawnManager : MonoBehaviour
     {
         gameManager = GameManager.instance;
         player = gameManager.skillManager.playerObject;
+        zombiesParent = new GameObject("ZombiesParent");
     }
 
     public void SetZombieSpawn(bool state)
@@ -97,6 +113,7 @@ public class ZombieSpawnManager : MonoBehaviour
         ZombieData data = new() { nav = zombieScript.agent };
         zombieScript.thisZombieData = data;
         zombies.Add(data);
+        currentZombie.transform.SetParent(zombiesParent.transform, true);
         currentNumberOfZombiesSpawned++;
     }
 }

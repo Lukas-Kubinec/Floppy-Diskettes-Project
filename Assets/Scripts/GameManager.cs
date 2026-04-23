@@ -1,6 +1,4 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +11,9 @@ public class GameManager : MonoBehaviour
     public TerrainObjectSpawnManager obstacleSpawnManager;
     public CameraEffects cameraEffects;
     public CharacterTriggerCollisionController characterTriggerCollisionController;
+    public UIManager uiManager;
+    public WeaponManager weaponManager;
+    public GameCharacterController gameCharacterController;
 
     // Game states variables
     bool worldGenerated = false;

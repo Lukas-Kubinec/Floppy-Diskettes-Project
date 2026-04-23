@@ -16,9 +16,19 @@ public class TerrainObjectSpawnManager : MonoBehaviour
     [Header("Spawn settings")]
     public int obstaclesToSpawn = 5;
     public List<GameObject> obstacles = new();
-    public List<GameObject> foliages = new();
+    public List<GameObject> pickups = new();
     private int obstaclesSpawned = 0;
+    private int healthPacksSpawned = 0;
+    private int ammoPacksSpawned = 0;
     private bool objectSpawnEnabled = false;
+
+    [Header("PickUps")]
+    public GameObject AmmoBox;
+    public GameObject HealthBox;
+    public float heightOffset = 1.0f;
+    public LayerMask checkLayerMaskCollision;
+    private GameObject PickUpsParent;
+
 
     // Height level settings - taken from World Generator settings
     private float waterLevel; // deepest
@@ -30,6 +40,7 @@ public class TerrainObjectSpawnManager : MonoBehaviour
     {
         gameManager = GameManager.instance;
         ObstaclesParent = new GameObject("ObstaclesParent");
+        PickUpsParent = new GameObject("PickUpsParent");
 
         // Gets layer height levels
         waterLevel = gameManager.worldGenerator.waterHeightLevel;
@@ -53,10 +64,63 @@ public class TerrainObjectSpawnManager : MonoBehaviour
         
         if (objectSpawnEnabled)
         {
-            StartSpawningObstacles();            
+            StartSpawningObstacles();
+            StartSpawningPickUps();
         }
     }
 
+    // Pickups
+    private void StartSpawningPickUps()
+    {
+        // Assigns random x & y axis
+        var worldSize = gameManager.worldGenerator.GetTerrainObject().terrainData.size;
+        // Amounts to spawn
+        var healthPacks = gameManager.skillManager.healthPackDropAmount;
+        var ammoPacks = gameManager.skillManager.ammoPackDropAmount;
+        var spawnSuccess = false;
+
+        while (healthPacksSpawned < healthPacks)
+        {
+            spawnSuccess = SpawnPickUp(HealthBox, worldSize);
+            if (spawnSuccess)
+            {
+                healthPacksSpawned++;
+            }
+        }
+        
+        while (ammoPacksSpawned < ammoPacks)
+        {
+            spawnSuccess = SpawnPickUp(AmmoBox, worldSize);
+            if (spawnSuccess)
+            {
+                ammoPacksSpawned++;
+            }
+        }
+    }
+
+    private bool SpawnPickUp(GameObject SpawnObject, Vector3 worldSize)
+    {
+        var randomX = Random.Range(0, worldSize.x);
+        var randomZ = Random.Range(0, worldSize.z);
+        var height = gameManager.worldGenerator.GetTerrainObject().SampleHeight(new Vector3(randomX, 0, randomZ));
+
+        var spawnLocation = new Vector3(randomX, height + heightOffset, randomZ);
+
+        if (Physics.CheckSphere(spawnLocation,0.5f, checkLayerMaskCollision))
+        {
+            // Spawn location is touching another object, so it cannot be spawned here
+            return false;
+        } else
+        {
+            var pickup = Instantiate(SpawnObject, spawnLocation, Quaternion.identity);
+
+            pickups.Add(pickup);
+            pickup.transform.SetParent(PickUpsParent.transform, true);
+            return true;
+        }
+    }
+
+    // Obstacles
     private void StartSpawningObstacles()
     {
         // Spawn location

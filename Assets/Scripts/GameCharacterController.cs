@@ -1,4 +1,5 @@
 using Unity.Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -22,6 +23,9 @@ public class GameCharacterController : MonoBehaviour
     public CinemachineCamera CinemachineFPS;
     public GameObject Player;
     private Vector2 movement;
+
+    // Other Components
+    public GameManager gameManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -47,6 +51,22 @@ public class GameCharacterController : MonoBehaviour
         // Player's Camera - Mouse Look function
         CharacterMouseLook();
         movement = inputManager.GetCameraMovementInput();
+    }
+
+    private void LateUpdate()
+    {
+        CheckOutOfBounds();
+    }
+
+    // Checks if player fell through map
+    private void CheckOutOfBounds()
+    {
+        var terrainBounds = gameManager.worldGenerator.GetTerrainObject().terrainData.bounds;
+
+        if (!terrainBounds.Contains(transform.position))
+        {
+            gameManager.skillManager.RespawnPlayerCentred();
+        }
     }
 
     // Mouse Look function
