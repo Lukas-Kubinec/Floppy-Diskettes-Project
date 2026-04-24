@@ -125,4 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f2f3a2481eac64f9f2fac8556627c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUpEffects
-  rotationSpeed: 3.5
+  rotationSpeed: 40
+  updownMovementSpeed: 2
+  newPositionOffset: 10

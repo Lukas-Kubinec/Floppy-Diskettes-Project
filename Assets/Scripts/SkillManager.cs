@@ -16,11 +16,16 @@ public class SkillManager : MonoBehaviour
     public float zombieHealth;
     public float zombieDamage;
 
+    [Header("Zombie Max stats")]
+    public float zombieMaxSpeed;
+    public float zombieMaxHealth;
+    public float zombieMaxDamage;
+
+
     [Header("What effects changes")]
     public int totalkills = 0;
     public int killsThisWave = 0;
     public float accuracy = 0;
-    public float damageTaken = 0;
     public int deaths = 0;
     public int waveCount = 0;
 
@@ -66,7 +71,7 @@ public class SkillManager : MonoBehaviour
         // Calculates stats for new wave
         waveCount++;
         numberofZombiesprevwave = numberOfZombiesToSpawn;
-        numberOfZombiesToSpawn = (int)((float)totalkills + (float)waveCount + (accuracy / 10f) - (damageTaken / 10f) - (float)deaths);
+        numberOfZombiesToSpawn = (int)((float)totalkills + (float)waveCount + (accuracy / 10f) - (float)deaths);
         zombieSpawnRate = numberOfZombiesToSpawn / waveCount;
 
         // Resets variables
@@ -98,22 +103,46 @@ public class SkillManager : MonoBehaviour
         CalcZombieDamage();
     }
 
+    private float CheckMaxZombieStat(float currentValue, float maxValue)
+    {
+        if (currentValue > maxValue)
+        {
+            // Ensures value 
+            return maxValue;
+        } else
+        {
+            return currentValue;
+        }
+    }
+
     private void CalcZombieHealth()
     {
         // Zombie health depends on how well the player is doing
-        zombieHealth = 100 + ((numberOfZombiesToSpawn * 10 + accuracy)/2);
+        if (zombieHealth < zombieMaxHealth)
+        {
+            zombieHealth += ((numberOfZombiesToSpawn + accuracy) / 10);
+            zombieHealth = CheckMaxZombieStat(zombieHealth, zombieMaxHealth);
+        }
     }
 
     private void CalcZombieSpeed() 
     {
         // Zombie speed depends on how well the player is doing as well as current wave
-        zombieSpeed = 5 + waveCount - (Mathf.Sqrt(damageTaken) / 10 ) - deaths;
+        if (zombieSpeed < zombieMaxSpeed)
+        {
+            zombieSpeed += waveCount;
+            zombieSpeed = CheckMaxZombieStat(zombieSpeed, zombieMaxSpeed);
+        }
     }
 
     private void CalcZombieDamage()
     {
         // The faster the zombie, the lower the damage
-        zombieDamage = 100 / zombieSpeed;
+        if (zombieDamage < zombieMaxDamage)
+        {
+            zombieDamage += waveCount;
+            zombieDamage = CheckMaxZombieStat(zombieDamage, zombieMaxDamage);
+        }
     }
 
     // Handling of Accuracy

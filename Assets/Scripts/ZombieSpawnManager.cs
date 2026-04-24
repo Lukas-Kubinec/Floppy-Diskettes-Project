@@ -26,11 +26,12 @@ public class ZombieSpawnManager : MonoBehaviour
     public GameManager gameManager;
     public static ZombieSpawnManager instance;
 
-    [Header("GameObjects")]
+    [Header("Game Objects")]
     public GameObject zombiePrefab;
     private GameObject player;
     private GameObject zombiesParent;
 
+    [Header("Settings")]
     public float currentNumberOfZombiesSpawned;
     public float currentSpawnTimer;
     public float maxSpawnTimer = 3;

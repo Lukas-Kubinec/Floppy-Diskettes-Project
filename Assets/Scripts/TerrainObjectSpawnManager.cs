@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
@@ -17,9 +18,9 @@ public class TerrainObjectSpawnManager : MonoBehaviour
     public int obstaclesToSpawn = 5;
     public List<GameObject> obstacles = new();
     public List<GameObject> pickups = new();
-    private int obstaclesSpawned = 0;
-    private int healthPacksSpawned = 0;
-    private int ammoPacksSpawned = 0;
+    public int obstaclesSpawned = 0;
+    public int healthPacksSpawned = 0;
+    public int ammoPacksSpawned = 0;
     private bool objectSpawnEnabled = false;
 
     [Header("PickUps")]
@@ -47,7 +48,7 @@ public class TerrainObjectSpawnManager : MonoBehaviour
         sandLevel = gameManager.worldGenerator.sandHeightLevel;
         grassLevel = gameManager.worldGenerator.grassHeightLevel;
         mountainLevel = gameManager.worldGenerator.mountainHeightLevel;
-}
+    }
 
     public void SetEnableObjectSpawn(bool state)
     {
@@ -65,12 +66,16 @@ public class TerrainObjectSpawnManager : MonoBehaviour
         if (objectSpawnEnabled)
         {
             StartSpawningObstacles();
-            StartSpawningPickUps();
+        }
+
+        if (healthPacksSpawned < gameManager.skillManager.healthPackDropAmount || ammoPacksSpawned < gameManager.skillManager.ammoPackDropAmount)
+        {
+            SpawnPickUps();
         }
     }
 
     // Pickups
-    private void StartSpawningPickUps()
+    private void SpawnPickUps()
     {
         // Assigns random x & y axis
         var worldSize = gameManager.worldGenerator.GetTerrainObject().terrainData.size;
@@ -88,6 +93,34 @@ public class TerrainObjectSpawnManager : MonoBehaviour
             }
         }
         
+        while (ammoPacksSpawned < ammoPacks)
+        {
+            spawnSuccess = SpawnPickUp(AmmoBox, worldSize);
+            if (spawnSuccess)
+            {
+                ammoPacksSpawned++;
+            }
+        }
+    }
+
+    private void SpawnAmountOfPickUps(int healthPacks, int ammoPacks)
+    {
+        // Assigns random x & y axis
+        var worldSize = gameManager.worldGenerator.GetTerrainObject().terrainData.size;
+
+        var spawnSuccess = false;
+        var healthPacksSpawned = 0;
+        var ammoPacksSpawned = 0;
+
+        while (healthPacksSpawned < healthPacks)
+        {
+            spawnSuccess = SpawnPickUp(HealthBox, worldSize);
+            if (spawnSuccess)
+            {
+                healthPacksSpawned++;
+            }
+        }
+
         while (ammoPacksSpawned < ammoPacks)
         {
             spawnSuccess = SpawnPickUp(AmmoBox, worldSize);

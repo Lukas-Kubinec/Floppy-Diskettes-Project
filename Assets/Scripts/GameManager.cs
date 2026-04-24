@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     public ZombieSpawnManager zombieSpawnManager;
     public InputManager inputManager;
     public WorldGenerator worldGenerator;
-    public TerrainObjectSpawnManager obstacleSpawnManager;
+    public TerrainObjectSpawnManager objectSpawnManager;
     public CameraEffects cameraEffects;
     public CharacterTriggerCollisionController characterTriggerCollisionController;
     public UIManager uiManager;
@@ -42,12 +42,12 @@ public class GameManager : MonoBehaviour
             cameraEffects.SetLoadingScreen(true);
             worldGenerator.BeginGenerateTerrainAndSpawns();
             if (worldGenerator.GetWorldIsReady()) { worldGenerated = true; } // Continues only if the world is built
-        } else if (worldGenerated && !obstacleSpawnManager.AllObstaclesSpawned())
+        } else if (worldGenerated && !objectSpawnManager.AllObstaclesSpawned())
         {
             worldGenerator.CreateGrass(); // Creates grass meshes on terrain
-            obstacleSpawnManager.SetEnableObjectSpawn(true);
+            objectSpawnManager.SetEnableObjectSpawn(true);
         }
-        else if (obstacleSpawnManager.AllObstaclesSpawned() && !NavigationBaked)
+        else if (objectSpawnManager.AllObstaclesSpawned() && !NavigationBaked)
         {
             worldGenerator.BakeNavigation();
             NavigationBaked = true;
@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
         else if (PlayerIsSpawned)
         {
             zombieSpawnManager.SetZombieSpawn(true);
+            uiManager.ChangeStateOfLoadingUI(false); // Hides the Loading UI
             gameIsReady = true; // World initiation is complete
         } 
     }

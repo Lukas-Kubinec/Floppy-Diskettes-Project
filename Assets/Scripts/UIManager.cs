@@ -23,6 +23,16 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI ShotsAccuracy;
     public TextMeshProUGUI TotalShots;
 
+    // Loading UI
+    [Header("Loading UI")]
+    public GameObject LoadingUI;
+
+    // LOADING UI
+    public void ChangeStateOfLoadingUI(bool state)
+    {
+        LoadingUI.SetActive(state);
+    }
+
     // TOP PANEL
     // Zombies
     public void UpdateZombiesUI(int zombiesSpawned, int zombiesKilled)

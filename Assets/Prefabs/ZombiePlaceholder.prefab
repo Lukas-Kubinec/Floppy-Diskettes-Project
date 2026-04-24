@@ -108,8 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1e01b0c40b9f64899b88d4cc600506, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zombieHealth: 100
-  zombieSpeed: 0
+  attacksEverySeconds: 3
   agent: {fileID: 1352797451956518899}
 --- !u!65 &7474229283557446429
 BoxCollider:
