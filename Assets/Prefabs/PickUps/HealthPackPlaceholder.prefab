@@ -18,7 +18,7 @@ GameObject:
   m_TagString: HealthBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &9110344313323669699
 Transform:
@@ -125,6 +125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f2f3a2481eac64f9f2fac8556627c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUpEffects
-  rotationSpeed: 25
-  updownMovementSpeed: 2
-  newPositionOffset: 1.5
+  rotationSpeed: 30
+  mainColour: {r: 1, g: 0, b: 0, a: 0}
+  secColour: {r: 1, g: 0.43867922, b: 0.43867922, a: 0}
+  moveUpBy: 0.5
+  moveSpeed: 0.5
