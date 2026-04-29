@@ -78,22 +78,41 @@ public class WeaponManager : MonoBehaviour
         Vector3 newPos = new Vector3(0f ,Weapon.transform.localPosition.y, 0f);
         float newX, newZ;
         // Checks Bob movement
-        if (Weapon.transform.localPosition.x != weaponStartingPosition.x && !PlayerIsMoving)
+        if (PlayerIsMoving)
         {
-            bobInterpolation += Time.deltaTime;
-            newX = Mathf.Lerp(Weapon.transform.localPosition.x, weaponStartingPosition.x, Mathf.SmoothStep(0, 1, bobInterpolation));
+            // Moves the gun left/right (weapon bob effect)
+            if (bobMovingLeft)
+            {
+                bobInterpolation += Time.deltaTime;
+                newX = Mathf.Lerp(weaponStartingPosition.x, weaponStartingPosition.x - 0.2f, Mathf.SmoothStep(0, 1, bobInterpolation));
+                if (bobInterpolation > 1)
+                {
+                    bobMovingLeft = false;
+                }
+            } 
+            else
+            {
+                bobInterpolation -= Time.deltaTime;
+                newX = Mathf.Lerp(weaponStartingPosition.x - 0.2f, weaponStartingPosition.x, Mathf.SmoothStep(1, 0, bobInterpolation));
+                if (bobInterpolation < 0)
+                {
+                    bobMovingLeft = true;
+                }
+            }
             newPos.x = newX;
         }
         else
         {
-            bobInterpolation = 0;
+            bobInterpolation += Time.deltaTime;
+            newX = Mathf.Lerp(Weapon.transform.localPosition.x, weaponStartingPosition.x, Mathf.SmoothStep(0, 1, bobInterpolation));
+            newPos.x = newX;
         }
 
         // Checks Recoild movement
         if (Weapon.transform.localPosition.z != weaponStartingPosition.z)
         {
             recoilInterpolation += Time.deltaTime;
-            newZ = Mathf.Lerp(Weapon.transform.localPosition.z, weaponStartingPosition.z, Mathf.SmoothStep(1,0,recoilInterpolation));
+            newZ = Mathf.Lerp(Weapon.transform.localPosition.z, weaponStartingPosition.z, Mathf.SmoothStep(0,1,recoilInterpolation));
             newPos.z = newZ;
         } else
         {

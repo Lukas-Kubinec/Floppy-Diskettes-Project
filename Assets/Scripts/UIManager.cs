@@ -27,10 +27,27 @@ public class UIManager : MonoBehaviour
     [Header("Loading UI")]
     public GameObject LoadingUI;
 
+    // Game Over UI
+    [Header("Game Over UI")]
+    public GameObject GameOverUI;
+
     // LOADING UI
     public void ChangeStateOfLoadingUI(bool state)
     {
         LoadingUI.SetActive(state);
+    }
+
+    // Game Over UI
+    public void ChangeStateOfGameOverUI(bool state)
+    {
+        GameOverUI.SetActive(state);
+    }
+
+    public void RestartGame()
+    {
+        // Resets current level
+        Time.timeScale = 1.0f; // Unfreezes time
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 
     // TOP PANEL
