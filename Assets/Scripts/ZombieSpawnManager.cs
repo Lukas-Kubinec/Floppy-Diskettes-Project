@@ -36,6 +36,8 @@ public class ZombieSpawnManager : MonoBehaviour
     public float currentSpawnTimer;
     public float maxSpawnTimer = 3;
     public bool waveOver = false;
+    public LayerMask checkLayerMaskCollision;
+    public float zombieSpawnDistanceFromPlayer = 10.0f;
     private bool zombieSpawnEnabled = false;
 
     public List<ZombieData> zombies = new();
@@ -103,7 +105,11 @@ public class ZombieSpawnManager : MonoBehaviour
         var spawnLocations = gameManager.worldGenerator.spawnZombieLocations;
         int spawnLocationsLenght = UnityEngine.Random.Range(0, spawnLocations.Count);
 
-        SpawnZombie(spawnLocations[spawnLocationsLenght]);
+        // Ensures zombie is not spawned near the player
+        if (!Physics.CheckSphere(spawnLocations[spawnLocationsLenght], zombieSpawnDistanceFromPlayer, checkLayerMaskCollision))
+        {
+            SpawnZombie(spawnLocations[spawnLocationsLenght]);
+        }
     }
 
     public void SpawnZombie(Vector3 spawnLocation)

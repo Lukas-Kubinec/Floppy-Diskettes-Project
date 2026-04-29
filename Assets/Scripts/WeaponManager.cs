@@ -21,6 +21,10 @@ public class WeaponManager : MonoBehaviour
     public float weaponAudioRandomMax; // Max limit used for audio adjustment
     private Vector3 weaponStartingPosition;
     private AudioSource weaponAudio;
+    private float recoilInterpolation = 0f; // Used to control the value of gun recoil movement
+    private float bobInterpolation = 0f; // Used to control the value of gun bob movement
+    private bool bobMovingLeft = false;
+    private bool PlayerIsMoving = false; // Used to check if there is movement input
 
 
     private void Start()
@@ -33,6 +37,9 @@ public class WeaponManager : MonoBehaviour
 
     private void Update()
     {
+        // Checks if there is any movement input applied
+        PlayerIsMoving = (gameManager.inputManager.GetMovementInput() != Vector2.zero);
+
         ShotDelayTimer();
         HandleShooting();
         CheckGunPosition();
@@ -57,18 +64,44 @@ public class WeaponManager : MonoBehaviour
         weaponAudio.PlayOneShot(weaponAudioClips[chosenIndex]);
     }
 
+
+    // Gun shooting recoil
     private void ShakeGunRecoil()
     {
         var newZ = weaponStartingPosition.z - 0.2f;
-        Weapon.transform.localPosition = new Vector3(weaponStartingPosition.x, weaponStartingPosition.y, newZ);
+        Weapon.transform.localPosition = new Vector3(Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, newZ);
     }
 
+    // Moves gun back
     private void CheckGunPosition()
     {
-        if (Weapon.transform.localPosition != weaponStartingPosition)
+        Vector3 newPos = new Vector3(0f ,Weapon.transform.localPosition.y, 0f);
+        float newX, newZ;
+        // Checks Bob movement
+        if (Weapon.transform.localPosition.x != weaponStartingPosition.x && !PlayerIsMoving)
         {
-            Weapon.transform.localPosition = Vector3.Lerp(Weapon.transform.localPosition, weaponStartingPosition, 0.1f);
+            bobInterpolation += Time.deltaTime;
+            newX = Mathf.Lerp(Weapon.transform.localPosition.x, weaponStartingPosition.x, Mathf.SmoothStep(0, 1, bobInterpolation));
+            newPos.x = newX;
         }
+        else
+        {
+            bobInterpolation = 0;
+        }
+
+        // Checks Recoild movement
+        if (Weapon.transform.localPosition.z != weaponStartingPosition.z)
+        {
+            recoilInterpolation += Time.deltaTime;
+            newZ = Mathf.Lerp(Weapon.transform.localPosition.z, weaponStartingPosition.z, Mathf.SmoothStep(1,0,recoilInterpolation));
+            newPos.z = newZ;
+        } else
+        {
+            recoilInterpolation = 0;
+        }
+
+        // Moves gun to new position every frame
+        Weapon.transform.localPosition = Vector3.Lerp(Weapon.transform.localPosition, newPos, 0.1f);
     }
 
     public void UpdateAmmo()

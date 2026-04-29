@@ -58,10 +58,12 @@ public class GameCharacterController : MonoBehaviour
         CheckOutOfBounds();
     }
 
+
     // Checks if player fell through map
     private void CheckOutOfBounds()
     {
         var terrainBounds = gameManager.worldGenerator.GetTerrainObject().terrainData.bounds;
+        terrainBounds.Expand(new Vector3(0.0f, 2.0f, 0.0f));
 
         if (!terrainBounds.Contains(transform.position))
         {

@@ -82,14 +82,9 @@ public class SkillManager : MonoBehaviour
         gameManager.uiManager.UpdateWaveUI(waveCount, (int)(completionRate));
         gameManager.uiManager.UpdateZombiesUI(numberOfZombiesToSpawn, totalkills);
 
-        if (numberOfZombiesToSpawn < numberofZombiesprevwave)
-            // If player does realy poorly, the game is over
-            gameManager.GameOver();
-        else
-        {
-            gameManager.zombieSpawnManager.waveOver = false;
-            gameManager.zombieSpawnManager.currentNumberOfZombiesSpawned = 0;
-        }
+        // Resets wave control variables
+        gameManager.zombieSpawnManager.waveOver = false;
+        gameManager.zombieSpawnManager.currentNumberOfZombiesSpawned = 0;
 
         RecalculateNewZombieData();
     }

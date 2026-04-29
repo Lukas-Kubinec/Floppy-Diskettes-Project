@@ -103,34 +103,6 @@ public class TerrainObjectSpawnManager : MonoBehaviour
         }
     }
 
-    private void SpawnAmountOfPickUps(int healthPacks, int ammoPacks)
-    {
-        // Assigns random x & y axis
-        var worldSize = gameManager.worldGenerator.GetTerrainObject().terrainData.size;
-
-        var spawnSuccess = false;
-        var healthPacksSpawned = 0;
-        var ammoPacksSpawned = 0;
-
-        while (healthPacksSpawned < healthPacks)
-        {
-            spawnSuccess = SpawnPickUp(HealthBox, worldSize);
-            if (spawnSuccess)
-            {
-                healthPacksSpawned++;
-            }
-        }
-
-        while (ammoPacksSpawned < ammoPacks)
-        {
-            spawnSuccess = SpawnPickUp(AmmoBox, worldSize);
-            if (spawnSuccess)
-            {
-                ammoPacksSpawned++;
-            }
-        }
-    }
-
     private bool SpawnPickUp(GameObject SpawnObject, Vector3 worldSize)
     {
         var randomX = Random.Range(0, worldSize.x);
