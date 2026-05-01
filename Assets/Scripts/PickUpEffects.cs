@@ -21,6 +21,10 @@ public class PickUpEffects : MonoBehaviour
     private Vector3 endPos;
     private bool moveUp = true;
 
+    [Header("Sound effects")]
+    public AudioClip soundEffect;
+    private AudioSource audioSource;
+
     private void Start()
     {
         // Up&Down movement
@@ -31,6 +35,9 @@ public class PickUpEffects : MonoBehaviour
         // Colour change
         matRenderer = GetComponent<Renderer>();
         material = matRenderer.material;
+
+        // Audio source creation
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -110,5 +117,12 @@ public class PickUpEffects : MonoBehaviour
     void RotateAround()
     {
         transform.Rotate(rotationSpeed * Time.deltaTime * Vector3.up);
+    }
+
+    // When pick up is destroyed
+    public void PlayPickUpSoundEffect()
+    {
+        // Plays the pick up sound
+        audioSource.PlayOneShot(soundEffect);
     }
 }

@@ -43,6 +43,7 @@ public class CharacterTriggerCollisionController : MonoBehaviour
     {
         // Checks for ammo tags
         if (other.CompareTag(ammoTag)) {
+            other.gameObject.GetComponent<PickUpEffects>().PlayPickUpSoundEffect();
             Destroy(other.gameObject); // deles the ammo box
             GameManager.instance.weaponManager.ReloadAmmo(ammoBoxAmount);
             GameManager.instance.weaponManager.UpdateAmmo();
@@ -50,6 +51,7 @@ public class CharacterTriggerCollisionController : MonoBehaviour
         }
         else if (other.CompareTag(healthTag))
         {
+            other.gameObject.GetComponent<PickUpEffects>().PlayPickUpSoundEffect();
             Destroy(other.gameObject); // deles the health box
             GameManager.instance.healthManager.HealDamage(healthBoxAmount);
             GameManager.instance.objectSpawnManager.healthPacksSpawned--; // Allows new pack to be spawned
