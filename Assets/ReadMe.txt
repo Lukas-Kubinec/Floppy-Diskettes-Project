@@ -1,6 +1,27 @@
 Authors:
 Lukas Kubinec
-
 Luke Broadley
-
 Dylan Dwyer
+
+Attributions:
+Sprites:
+Images - bulltet, skull, heart - Flaticon.com'. This cover has been designed using resources from Flaticon.com
+
+Audio:
+gunshot1.wav by Mihacappy -- https://freesound.org/s/833404/ -- License: Creative Commons 0
+
+Assault rifle suppressor gunshot. by SubwaySandwitch420 -- https://freesound.org/s/539141/ -- License: Creative Commons 0
+
+gunshot__high_2.wav by eardeer -- https://freesound.org/s/402009/ -- License: Attribution 4.0
+
+Hurt Me Plenty by Beetlemuse -- https://freesound.org/s/685533/ -- License: Attribution 4.0
+
+Voice_AdultMale_PainGrunts_09.wav by MrFossy -- https://freesound.org/s/547209/ -- License: Creative Commons 0
+
+male_hurt9.ogg by micahlg -- https://freesound.org/s/413186/ -- License: Creative Commons 0
+
+Male Death #1 by AUDACITIER -- https://freesound.org/s/632244/ -- License: Attribution 4.0
+
+Pick-up Health by juancamiloorjuela -- https://freesound.org/s/204318/ -- License: Creative Commons 0
+
+Ammo pick up soundeffect.wav by Physon712 -- https://freesound.org/s/580872/ -- License: Creative Commons 0

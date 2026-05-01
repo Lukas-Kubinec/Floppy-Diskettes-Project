@@ -1770,7 +1770,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3, y: 2, z: 3}
+  m_Size: {x: 4, y: 2, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!82 &751370715
 AudioSource:
@@ -3395,9 +3395,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dbabd9512c780d4fa0893eb662d760c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthManager
-  currentPlayerHealth: 2
+  currentPlayerHealth: 100
   maxHealth: 100
-  lives: 2
+  lives: 10
   hurtClip: {fileID: 8300000, guid: 1e03df36b42ea3747a507d47e925d4db, type: 3}
 --- !u!114 &1420733074
 MonoBehaviour:

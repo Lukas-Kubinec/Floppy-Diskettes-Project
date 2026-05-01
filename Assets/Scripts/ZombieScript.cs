@@ -11,8 +11,8 @@ public class ZombieScript : MonoBehaviour
     private bool zombieIsSlowed = false;
     private float slowedDownTimer = 0f;
     private float normalSpeed;
-    private bool isAttacking;
-    private bool isWalking;
+    private bool isAttacking = false;
+    private bool isWalking = true;
 
     [Header("Components")]
     public ZombieData thisZombieData;
@@ -27,6 +27,8 @@ public class ZombieScript : MonoBehaviour
     public Animation animPlayer;
     public AnimationClip walkingAnim;
     public AnimationClip attackAnim;
+    private float animationTimer = 0f;
+    private bool isInPlayersTrigger = false;
 
     void Start()
     {
@@ -41,32 +43,41 @@ public class ZombieScript : MonoBehaviour
     {
         if (isAttacking)
         {
-            animPlayer.clip = attackAnim;
-        } else if (isWalking)
+            //animPlayer.clip = attackAnim;
+            animPlayer.Play("Zombie|Attack");
+        } 
+        else if (isWalking)
         {
-            animPlayer.clip = walkingAnim;
+            //animPlayer.clip = walkingAnim;
+            animPlayer.Play("Zombie|Walk");
         }
     }
 
-    private void LateUpdate()
+    private void HandleSlowDown()
     {
-        HandleAnimations();
-
-
-
-
         if (zombieIsSlowed && slowedDownTimer < slowedForSecondsWhenShot)
         {
             // Zombie is slowed down
             slowedDownTimer += Time.deltaTime;
             agent.speed = agent.speed / 2f;
-        } 
-        else
+        }
+        else if (zombieIsSlowed)
         {
             // Zombie is set to full speed
             slowedDownTimer = 0f;
             zombieIsSlowed = false;
             agent.speed = normalSpeed;
+        }
+    }
+
+    private void Update()
+    {
+        HandleSlowDown();
+        HandleAnimations();
+
+        if (isAttacking)
+        {
+            CheckIfNearPlayer();
         }
     }
 
@@ -81,14 +92,6 @@ public class ZombieScript : MonoBehaviour
         audioSource.PlayOneShot(deathClip);
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            StartCoroutine(AttackPlayer());
-        }
-    }
-
     public void SlowDownZombieWhenShot()
     {
         zombieIsSlowed = true;
@@ -99,15 +102,60 @@ public class ZombieScript : MonoBehaviour
         audioSource.PlayOneShot(hurtClip);
     }
 
-    private IEnumerator AttackPlayer()
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isInPlayersTrigger = true;
+            animationTimer += Time.deltaTime;
+
+            if (isWalking)
+            {
+                StartAttack();
+            }
+        }
+    }
+
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isInPlayersTrigger = false;
+        }
+    }
+
+    private void StartAttack()
     {
         isAttacking = true;
-        isWalking = false;
         agent.speed = 0; // Stops the zombie
+        isWalking = false;
+        HandleAnimations();
+    }
+
+    private void CheckIfNearPlayer()
+    {
+        if (isInPlayersTrigger && animationTimer >= attackAnim.length)
+        {
+            AttackPlayer();
+        } 
+        else if (!isInPlayersTrigger)
+        {
+            ResetZombieToNormalState();
+        }
+    }
+
+    private void AttackPlayer()
+    {
         GameManager.instance.healthManager.TakeDamage(thisZombieData.zombieDamage);
-        yield return new WaitForSeconds(attacksEverySeconds);
-        agent.speed = thisZombieData.zombieSpeed; // Zombie is moving
+        ResetZombieToNormalState();
+    }
+
+    private void ResetZombieToNormalState()
+    {
+        animationTimer = 0f;
         isAttacking = false;
         isWalking = true;
+        agent.speed = thisZombieData.zombieSpeed; // Zombie is moving
     }
 }
