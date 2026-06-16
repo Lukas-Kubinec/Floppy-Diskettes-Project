@@ -97,7 +97,9 @@ From a technical perspective, the integration of multiple PCG systems such as th
 From a teamworking perspective, the group demonstrated effective communication and collaboration throughout the development process. Regular updates and shared access to the project files ensured all members remained aligned and aware of ongoing progress. The early agreement on the project concept and scope was particularly beneficial too, as it reduced the need for significant redesign during development. 
 In terms of the project scope, while the implemented systems are functional and work as intended for the purpose of the project, there is some potential for further expansion. The addition of more diverse enemy types, more complex environmental interactions or procedurally generated structures could significantly enhance the gameplay depth. 
 For example, the terrain generation could also be enhanced, as currently the terrain is smooth, with no steep hills nor deep valleys. 
-In conclusion, the project successfully demonstrates the practical application of procedural content generation within a game development setting, achieving its objectives. 
+In conclusion, the project successfully demonstrates the practical application of procedural content generation within a game development setting, achieving its objectives.
+
+
 References
 
 MONTSERRAT, R., 2025. Procedural Content Generation for video games, a friendly approach [online]. Available from: https://www.levelup-gamedevhub.com/en/news/procedural-content-generation-for-video-games-a-friendly-approach/ [Accessed 30 April 2026].
